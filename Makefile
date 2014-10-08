@@ -26,7 +26,6 @@ JAVAFILES = \
 	RequiredFailure.java \
 	TooDifficult.java \
 	CL.java \
-        ClTests.java \
 	Timer.java
 
 
@@ -35,7 +34,8 @@ java_JAVA = $(JAVAFILES)
 all: CassowaryLayout.jar
 
 test:
-	java org.pybee.cassowary.ClTests
+	javac org/pybee/cassowary/test/*.java
+	java org.pybee.cassowary.test.Tests
 
 clean:
 	rm CassowaryLayout.jar

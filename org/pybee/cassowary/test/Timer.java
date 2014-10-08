@@ -1,5 +1,4 @@
-package org.pybee.cassowary;
-
+package org.pybee.cassowary.test;
 
 public class Timer
 {

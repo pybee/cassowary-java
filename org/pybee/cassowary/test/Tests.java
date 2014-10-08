@@ -1,10 +1,12 @@
-package org.pybee.cassowary;
+package org.pybee.cassowary.test;
 
 import java.util.Random;
 
+import org.pybee.cassowary.*;
 
-public class ClTests extends CL {
-    public ClTests()
+
+public class Tests extends CL {
+    public Tests()
     {
         RND = new Random(123456789);
     }
@@ -407,7 +409,7 @@ public class ClTests extends CL {
     public final static void main(String[] args)
        throws InternalError, NonlinearExpression, RequiredFailure, ConstraintNotFound, CassowaryError
     {
-        ClTests clt = new ClTests();
+        Tests clt = new Tests();
 
         boolean fAllOkResult = true;
         boolean fResult;
