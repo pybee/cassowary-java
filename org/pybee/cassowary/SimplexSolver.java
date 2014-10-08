@@ -16,111 +16,156 @@ import java.util.*;
 
 public class SimplexSolver extends Tableau
 {
-  // Ctr initializes the fields, and creates the objective row
-  public SimplexSolver()
-  {
-    _stayMinusErrorVars = new Vector();
-    _stayPlusErrorVars = new Vector();
-    _errorVars = new Hashtable();
-    _markerVars = new Hashtable();
+    //// BEGIN PRIVATE INSTANCE FIELDS
 
-    _resolve_pair = new Vector(2);
-    _resolve_pair.addElement(new ClDouble(0));
-    _resolve_pair.addElement(new ClDouble(0));
+    // the arrays of positive and negative error vars for the stay constraints
+    // (need both positive and negative since they have only non-negative values)
+    private Vector _stayMinusErrorVars;
+    private Vector _stayPlusErrorVars;
 
-    _objective = new ObjectiveVariable("Z");
+    // give error variables for a non required constraint,
+    // maps to SlackVariable-s
+    private Hashtable _errorVars; // map Constraint to Set (of Variable)
 
-    _editVarMap = new Hashtable();
+    // Return a lookup table giving the marker variable for each
+    // constraint (used when deleting a constraint).
+    private Hashtable _markerVars; // map Constraint to Variable
 
-    _slackCounter = 0;
-    _artificialCounter = 0;
-    _dummyCounter = 0;
-    _epsilon = 1e-8;
+    private ObjectiveVariable _objective;
 
-    _fOptimizeAutomatically = true;
-    _fNeedsSolving = false;
+    // Map edit variables to EditInfo-s.
+    // EditInfo instances contain all the information for an
+    // edit constraint (the edit plus/minus vars, the index [for old-style
+    // resolve(Vector...) interface], and the previous value.
+    // (EditInfo replaces the parallel vectors from the Smalltalk impl.)
+    private Hashtable _editVarMap; // map Variable to a EditInfo
 
-    LinearExpression e = new LinearExpression();
-    _rows.put(_objective,e);
-    _stkCedcns = new Stack();
-    _stkCedcns.push(new Integer(0));
+    private long _slackCounter;
+    private long _artificialCounter;
+    private long _dummyCounter;
 
-    if (fTraceOn) traceprint("objective expr == " + rowExpression(_objective));
-  }
+    private Vector _resolve_pair;
 
-  // Convenience function for creating a linear inequality constraint
-  public final SimplexSolver addLowerBound(AbstractVariable v, double lower)
-    throws RequiredFailure, InternalError
-  {
-    LinearInequality cn =
-      new LinearInequality(v,CL.GEQ,new LinearExpression(lower));
-    return addConstraint(cn);
-  }
+    private double _epsilon;
 
-  // Convenience function for creating a linear inequality constraint
-  public final SimplexSolver addUpperBound(AbstractVariable v, double upper)
-    throws RequiredFailure, InternalError
-  {
-    LinearInequality cn =
-      new LinearInequality(v,CL.LEQ,new LinearExpression(upper));
-    return addConstraint(cn);
-  }
+    private boolean _fOptimizeAutomatically;
+    private boolean _fNeedsSolving;
 
-  // Convenience function for creating a pair of linear inequality constraint
-  public final SimplexSolver addBounds(AbstractVariable v,
-                                         double lower, double upper)
-    throws RequiredFailure, InternalError
-  { addLowerBound(v,lower); addUpperBound(v,upper); return this; }
+    private Stack _stkCedcns;
 
-  // Add constraint "cn" to the solver
-  public final SimplexSolver addConstraint(Constraint cn)
-       throws RequiredFailure, InternalError
-  {
-    if (fTraceOn) fnenterprint("addConstraint: " + cn);
 
-    Vector eplus_eminus = new Vector(2);
-    ClDouble prevEConstant = new ClDouble();
-    LinearExpression expr = newExpression(cn, /* output to: */
-                                            eplus_eminus,
-                                            prevEConstant);
-    boolean fAddedOkDirectly = false;
+    // Ctr initializes the fields, and creates the objective row
+    public SimplexSolver()
+    {
+        _stayMinusErrorVars = new Vector();
+        _stayPlusErrorVars = new Vector();
+        _errorVars = new Hashtable();
+        _markerVars = new Hashtable();
 
-    try {
-      fAddedOkDirectly = tryAddingDirectly(expr);
-      if (!fAddedOkDirectly) {
-        // could not add directly
-        addWithArtificialVariable(expr);
-      }
-    } catch (RequiredFailure err) {
-      ///try {
-        ///        removeConstraint(cn); // FIXGJB
-        //      } catch (ConstraintNotFound errNF) {
-        // This should not possibly happen
-        /// System.err.println("ERROR: could not find a constraint just added\n");
-        ///}
-      throw err;
+        _resolve_pair = new Vector<Double>(2);
+        _resolve_pair.addElement(new Double(0.0));
+        _resolve_pair.addElement(new Double(0.0));
+
+        _objective = new ObjectiveVariable("Z");
+
+        _editVarMap = new Hashtable();
+
+        _slackCounter = 0;
+        _artificialCounter = 0;
+        _dummyCounter = 0;
+        _epsilon = 1e-8;
+
+        _fOptimizeAutomatically = true;
+        _fNeedsSolving = false;
+
+        LinearExpression e = new LinearExpression();
+        _rows.put(_objective,e);
+        _stkCedcns = new Stack();
+        _stkCedcns.push(new Integer(0));
+
+        if (fTraceOn) traceprint("objective expr == " + rowExpression(_objective));
     }
 
-    _fNeedsSolving = true;
+    // Convenience function for creating a linear inequality constraint
+    public final SimplexSolver addLowerBound(AbstractVariable v, double lower)
+            throws RequiredFailure, InternalError
+    {
+        LinearInequality cn = new LinearInequality(v,CL.GEQ,new LinearExpression(lower));
+        return addConstraint(cn);
+    }
 
-    if (cn.isEditConstraint()) {
-      int i = _editVarMap.size();
-      EditConstraint cnEdit = (EditConstraint) cn;
-      SlackVariable clvEplus = (SlackVariable) eplus_eminus.elementAt(0);
-      SlackVariable clvEminus = (SlackVariable) eplus_eminus.elementAt(1);
-      _editVarMap.put(cnEdit.variable(),
+    // Convenience function for creating a linear inequality constraint
+    public final SimplexSolver addUpperBound(AbstractVariable v, double upper)
+            throws RequiredFailure, InternalError
+    {
+        LinearInequality cn = new LinearInequality(v,CL.LEQ,new LinearExpression(upper));
+        return addConstraint(cn);
+    }
+
+    // Convenience function for creating a pair of linear inequality constraint
+    public final SimplexSolver addBounds(AbstractVariable v, double lower, double upper)
+    throws RequiredFailure, InternalError
+    {
+        addLowerBound(v, lower);
+        addUpperBound(v, upper);
+        return this;
+    }
+
+    // Add constraint "cn" to the solver
+    public final SimplexSolver addConstraint(Constraint cn)
+            throws RequiredFailure, InternalError
+    {
+        if (fTraceOn) fnenterprint("addConstraint: " + cn);
+
+        Vector eplus_eminus = new Vector<Double>(2);
+        Double prevEConstant = new Double(0.0);
+        LinearExpression expr = newExpression(cn, /* output to: */
+                                            eplus_eminus,
+                                            prevEConstant);
+        boolean fAddedOkDirectly = false;
+
+        try
+        {
+            fAddedOkDirectly = tryAddingDirectly(expr);
+            if (!fAddedOkDirectly)
+            {
+                // could not add directly
+                addWithArtificialVariable(expr);
+            }
+        }
+        catch (RequiredFailure err)
+        {
+            ///try {
+            ///        removeConstraint(cn); // FIXGJB
+            //      } catch (ConstraintNotFound errNF) {
+            // This should not possibly happen
+            /// System.err.println("ERROR: could not find a constraint just added\n");
+            ///}
+            throw err;
+        }
+
+        _fNeedsSolving = true;
+
+        if (cn.isEditConstraint())
+        {
+            int i = _editVarMap.size();
+            EditConstraint cnEdit = (EditConstraint) cn;
+            SlackVariable clvEplus = (SlackVariable) eplus_eminus.elementAt(0);
+            SlackVariable clvEminus = (SlackVariable) eplus_eminus.elementAt(1);
+            _editVarMap.put(cnEdit.variable(),
                       new EditInfo(cnEdit,clvEplus,clvEminus,
                                      prevEConstant.doubleValue(),
                                      i));
-    }
+        }
 
-    if (_fOptimizeAutomatically) {
-      optimize(_objective);
-      setExternalVariables();
-    }
+        if (_fOptimizeAutomatically)
+        {
+            optimize(_objective);
+            setExternalVariables();
+        }
 
-    return  this;
-  }
+        return this;
+    }
 
   // Same as addConstraint, except returns false if the constraint
   // resulted in an unsolvable system (instead of throwing an exception)
@@ -275,8 +320,8 @@ public class SimplexSolver extends Tableau
 
   // Add a stay of the given strength (default to weak) of v to the tableau
   public final SimplexSolver addStay(Variable v,
-				 Strength strength,
-				 double weight)
+         Strength strength,
+         double weight)
        throws RequiredFailure, InternalError
   {
     StayConstraint cn = new StayConstraint(v,strength,weight);
@@ -285,7 +330,7 @@ public class SimplexSolver extends Tableau
 
   // default to weight == 1.0
   public final SimplexSolver addStay(Variable v,
-				 Strength strength)
+         Strength strength)
        throws RequiredFailure, InternalError
   {
     addStay(v,strength,1.0); return this;
@@ -318,17 +363,17 @@ public class SimplexSolver extends Tableau
 
     if (eVars != null) {
       for (Enumeration e = eVars.elements(); e.hasMoreElements() ; ) {
-	AbstractVariable clv = (AbstractVariable) e.nextElement();
-	final LinearExpression expr = rowExpression(clv);
-	if (expr == null ) {
-	  zRow.addVariable(clv, -cn.weight() *
-			    cn.strength().symbolicWeight().asDouble(),
-			    _objective, this);
-	} else { // the error variable was in the basis
-	  zRow.addExpression(expr, -cn.weight() *
-			     cn.strength().symbolicWeight().asDouble(),
-			     _objective, this);
-	}
+  AbstractVariable clv = (AbstractVariable) e.nextElement();
+  final LinearExpression expr = rowExpression(clv);
+  if (expr == null ) {
+    zRow.addVariable(clv, -cn.weight() *
+          cn.strength().symbolicWeight().asDouble(),
+          _objective, this);
+  } else { // the error variable was in the basis
+    zRow.addExpression(expr, -cn.weight() *
+           cn.strength().symbolicWeight().asDouble(),
+           _objective, this);
+  }
       }
     }
 
@@ -348,47 +393,47 @@ public class SimplexSolver extends Tableau
       AbstractVariable exitVar = null;
       double minRatio = 0.0;
       for (Enumeration e = col.elements(); e.hasMoreElements() ; ) {
-	final AbstractVariable v = (AbstractVariable) e.nextElement();
-	if (v.isRestricted() ) {
-	  final LinearExpression expr = rowExpression( v);
-	  double coeff = expr.coefficientFor(marker);
-	  if (fTraceOn) traceprint("Marker " + marker + "'s coefficient in " + expr + " is " + coeff);
-	  if (coeff < 0.0) {
-	    double r = -expr.constant() / coeff;
-	    if (exitVar == null || r < minRatio) {
-	      minRatio = r;
-	      exitVar = v;
-	    }
-	  }
-	}
+  final AbstractVariable v = (AbstractVariable) e.nextElement();
+  if (v.isRestricted() ) {
+    final LinearExpression expr = rowExpression( v);
+    double coeff = expr.coefficientFor(marker);
+    if (fTraceOn) traceprint("Marker " + marker + "'s coefficient in " + expr + " is " + coeff);
+    if (coeff < 0.0) {
+      double r = -expr.constant() / coeff;
+      if (exitVar == null || r < minRatio) {
+        minRatio = r;
+        exitVar = v;
+      }
+    }
+  }
       }
       if (exitVar == null ) {
-	if (fTraceOn) traceprint("exitVar is still null");
-	for (Enumeration e = col.elements(); e.hasMoreElements() ; ) {
-	  final AbstractVariable v = (AbstractVariable) e.nextElement();
-	  if (v.isRestricted() ) {
-	    final LinearExpression expr = rowExpression(v);
-	    double coeff = expr.coefficientFor(marker);
-	    double r = expr.constant() / coeff;
-	    if (exitVar == null || r < minRatio) {
-	      minRatio = r;
-	      exitVar = v;
-	    }
-	  }
-	}
+  if (fTraceOn) traceprint("exitVar is still null");
+  for (Enumeration e = col.elements(); e.hasMoreElements() ; ) {
+    final AbstractVariable v = (AbstractVariable) e.nextElement();
+    if (v.isRestricted() ) {
+      final LinearExpression expr = rowExpression(v);
+      double coeff = expr.coefficientFor(marker);
+      double r = expr.constant() / coeff;
+      if (exitVar == null || r < minRatio) {
+        minRatio = r;
+        exitVar = v;
+      }
+    }
+  }
       }
 
       if (exitVar == null) {
-	// exitVar is still null
-	if (col.size() == 0) {
-	  removeColumn(marker);
-	} else {
-	  exitVar = (AbstractVariable) col.elements().nextElement();
-	}
+  // exitVar is still null
+  if (col.size() == 0) {
+    removeColumn(marker);
+  } else {
+    exitVar = (AbstractVariable) col.elements().nextElement();
+  }
       }
 
       if (exitVar != null) {
-	pivot(marker, exitVar);
+  pivot(marker, exitVar);
       }
     }
 
@@ -399,21 +444,21 @@ public class SimplexSolver extends Tableau
 
     if (eVars != null) {
       for (Enumeration e = eVars.elements(); e.hasMoreElements(); ) {
-	AbstractVariable v = (AbstractVariable) e.nextElement();
+  AbstractVariable v = (AbstractVariable) e.nextElement();
         // FIXGJBNOW != or equals?
-	if ( v != marker ) {
-	  removeColumn(v);
-	  v = null;
-	}
+  if ( v != marker ) {
+    removeColumn(v);
+    v = null;
+  }
       }
     }
 
     if (cn.isStayConstraint()) {
       if (eVars != null) {
-	for (int i = 0; i < _stayPlusErrorVars.size(); i++) {
-	  eVars.remove(_stayPlusErrorVars.elementAt(i));
-	  eVars.remove(_stayMinusErrorVars.elementAt(i));
-	}
+  for (int i = 0; i < _stayPlusErrorVars.size(); i++) {
+    eVars.remove(_stayPlusErrorVars.elementAt(i));
+    eVars.remove(_stayMinusErrorVars.elementAt(i));
+  }
       }
     } else if (cn.isEditConstraint()) {
       assert eVars != null;
@@ -469,7 +514,7 @@ public class SimplexSolver extends Tableau
       int i = cei.Index();
       try {
         if (i < newEditConstants.size())
-          suggestValue(v,((ClDouble) newEditConstants.elementAt(i))
+          suggestValue(v,((Double) newEditConstants.elementAt(i))
                        .doubleValue());
       } catch (CassowaryError err) {
         throw new InternalError("Error during resolve");
@@ -482,8 +527,8 @@ public class SimplexSolver extends Tableau
   public final void resolve(double x, double y)
        throws InternalError
   {
-    ((ClDouble) _resolve_pair.elementAt(0)).setValue(x);
-    ((ClDouble) _resolve_pair.elementAt(1)).setValue(y);
+    _resolve_pair.set(0, x);
+    _resolve_pair.set(1, y);
     resolve(_resolve_pair);
   }
 
@@ -674,9 +719,9 @@ public class SimplexSolver extends Tableau
         // if there isn't another variable in the row
         // then the tableau contains the equation av=0 --
         // just delete av's row
-	removeRow(av);
-	removeRow(az);
-	return;
+  removeRow(av);
+  removeRow(az);
+  return;
       }
       AbstractVariable entryVar = e.anyPivotableVariable();
       pivot( entryVar, av);
@@ -739,28 +784,28 @@ public class SimplexSolver extends Tableau
 
     for (Enumeration e = terms.keys(); e.hasMoreElements() ; ) {
       final AbstractVariable v = (AbstractVariable) e.nextElement();
-      final double c = ((ClDouble) terms.get(v)).doubleValue();
+      final double c = ((Double) terms.get(v)).doubleValue();
 
       if (foundUnrestricted){
-	if (!v.isRestricted()) {
-	  if (!columnsHasKey(v))
-	    return v;
-	}
+  if (!v.isRestricted()) {
+    if (!columnsHasKey(v))
+      return v;
+  }
       } else {
-	// we haven't found an restricted variable yet
-	if (v.isRestricted()) {
-	  if (!foundNewRestricted && !v.isDummy() && c < 0.0) {
-	    final Set col = (Set) _columns.get(v);
-	    if (col == null ||
-		( col.size() == 1 && columnsHasKey(_objective) ) ) {
-	    subject = v;
-	    foundNewRestricted = true;
-	    }
-	  }
-	} else {
-	  subject = v;
-	  foundUnrestricted = true;
-	}
+  // we haven't found an restricted variable yet
+  if (v.isRestricted()) {
+    if (!foundNewRestricted && !v.isDummy() && c < 0.0) {
+      final Set col = (Set) _columns.get(v);
+      if (col == null ||
+    ( col.size() == 1 && columnsHasKey(_objective) ) ) {
+      subject = v;
+      foundNewRestricted = true;
+      }
+    }
+  } else {
+    subject = v;
+    foundUnrestricted = true;
+  }
       }
     }
 
@@ -771,12 +816,12 @@ public class SimplexSolver extends Tableau
 
     for (Enumeration e = terms.keys(); e.hasMoreElements() ;) {
       final AbstractVariable v = (AbstractVariable) e.nextElement();
-      final double c = ((ClDouble) terms.get(v)).doubleValue();
+      final double c = ((Double) terms.get(v)).doubleValue();
       if (!v.isDummy())
-	return null; // nope, no luck
+  return null; // nope, no luck
       if (!columnsHasKey(v)) {
-	subject = v;
-	coeff = c;
+  subject = v;
+  coeff = c;
       }
     }
 
@@ -815,7 +860,7 @@ public class SimplexSolver extends Tableau
       exprPlus.incrementConstant(delta);
 
       if (exprPlus.constant() < 0.0) {
-	_infeasibleRows.insert(plusErrorVar);
+  _infeasibleRows.insert(plusErrorVar);
       }
       return;
     }
@@ -824,7 +869,7 @@ public class SimplexSolver extends Tableau
     if (exprMinus != null) {
       exprMinus.incrementConstant(-delta);
       if (exprMinus.constant() < 0.0) {
-	_infeasibleRows.insert(minusErrorVar);
+  _infeasibleRows.insert(minusErrorVar);
       }
       return;
     }
@@ -838,7 +883,7 @@ public class SimplexSolver extends Tableau
       final double c = expr.coefficientFor(minusErrorVar);
       expr.incrementConstant(c * delta);
       if (basicVar.isRestricted() && expr.constant() < 0.0) {
-	_infeasibleRows.insert(basicVar);
+  _infeasibleRows.insert(basicVar);
       }
     }
   }
@@ -852,32 +897,32 @@ public class SimplexSolver extends Tableau
     final LinearExpression zRow = rowExpression(_objective);
     while (!_infeasibleRows.isEmpty()) {
       AbstractVariable exitVar =
-	(AbstractVariable) _infeasibleRows.elements().nextElement();
+  (AbstractVariable) _infeasibleRows.elements().nextElement();
       _infeasibleRows.remove(exitVar);
       AbstractVariable entryVar = null;
       LinearExpression expr = rowExpression(exitVar);
       if (expr != null ) {
-	if (expr.constant() < 0.0) {
-	  double ratio = Double.MAX_VALUE;
-	  double r;
-	  Hashtable terms = expr.terms();
-	  for (Enumeration e = terms.keys(); e.hasMoreElements() ; ) {
-	    AbstractVariable v = (AbstractVariable) e.nextElement();
-	    double c = ((ClDouble)terms.get(v)).doubleValue();
-	    if (c > 0.0 && v.isPivotable()) {
-	      double zc = zRow.coefficientFor(v);
-	      r = zc/c; // FIXGJB r:= zc/c or zero, as SymbolicWeight-s
-	      if (r < ratio) {
-		entryVar = v;
-		ratio = r;
-	      }
-	    }
-	  }
-	  if (ratio == Double.MAX_VALUE) {
-	    throw new InternalError("ratio == nil (MAX_VALUE) in dualOptimize");
-	  }
-	  pivot( entryVar, exitVar);
-	}
+  if (expr.constant() < 0.0) {
+    double ratio = Double.MAX_VALUE;
+    double r;
+    Hashtable terms = expr.terms();
+    for (Enumeration e = terms.keys(); e.hasMoreElements() ; ) {
+      AbstractVariable v = (AbstractVariable) e.nextElement();
+      double c = ((Double)terms.get(v)).doubleValue();
+      if (c > 0.0 && v.isPivotable()) {
+        double zc = zRow.coefficientFor(v);
+        r = zc/c; // FIXGJB r:= zc/c or zero, as SymbolicWeight-s
+        if (r < ratio) {
+    entryVar = v;
+    ratio = r;
+        }
+      }
+    }
+    if (ratio == Double.MAX_VALUE) {
+      throw new InternalError("ratio == nil (MAX_VALUE) in dualOptimize");
+    }
+    pivot( entryVar, exitVar);
+  }
       }
     }
   }
@@ -887,95 +932,116 @@ public class SimplexSolver extends Tableau
   // Normalize if necessary so that the constant is non-negative.  If
   // the constraint is non-required give its error variables an
   // appropriate weight in the objective function.
-  protected final LinearExpression newExpression(Constraint cn,
-                                                   Vector eplus_eminus,
-                                                   ClDouble prevEConstant)
-  {
-    if (fTraceOn) fnenterprint("newExpression: " + cn);
-    if (fTraceOn) traceprint("cn.isInequality() == " + cn.isInequality());
-    if (fTraceOn) traceprint("cn.isRequired() == " + cn.isRequired());
+    protected final LinearExpression newExpression(Constraint cn, Vector eplus_eminus, Double prevEConstant)
+    {
+        if (fTraceOn) fnenterprint("newExpression: " + cn);
+        if (fTraceOn) traceprint("cn.isInequality() == " + cn.isInequality());
+        if (fTraceOn) traceprint("cn.isRequired() == " + cn.isRequired());
 
-    final LinearExpression cnExpr = cn.expression();
-    LinearExpression expr = new LinearExpression(cnExpr.constant());
-    SlackVariable slackVar = new SlackVariable();
-    DummyVariable dummyVar = new DummyVariable();
-    SlackVariable eminus = new SlackVariable();
-    SlackVariable eplus = new SlackVariable();
-    final Hashtable cnTerms = cnExpr.terms();
-    for (Enumeration en = cnTerms.keys(); en.hasMoreElements(); ) {
-      final AbstractVariable v = (AbstractVariable) en.nextElement();
-      double c = ((ClDouble) cnTerms.get(v)).doubleValue();
-      final LinearExpression e = rowExpression(v);
-      if (e == null)
-	expr.addVariable(v,c);
-      else
-	expr.addExpression(e,c);
+        final LinearExpression cnExpr = cn.expression();
+        LinearExpression expr = new LinearExpression(cnExpr.constant());
+        SlackVariable slackVar = new SlackVariable();
+        DummyVariable dummyVar = new DummyVariable();
+        SlackVariable eminus = new SlackVariable();
+        SlackVariable eplus = new SlackVariable();
+        final Hashtable cnTerms = cnExpr.terms();
+        for (Enumeration en = cnTerms.keys(); en.hasMoreElements(); )
+        {
+            final AbstractVariable v = (AbstractVariable) en.nextElement();
+            double c = ((Double) cnTerms.get(v)).doubleValue();
+            final LinearExpression e = rowExpression(v);
+            if (e == null)
+            {
+                expr.addVariable(v,c);
+            }
+            else
+            {
+                expr.addExpression(e,c);
+            }
+        }
+
+        if (cn.isInequality())
+        {
+            ++_slackCounter;
+            slackVar = new SlackVariable (_slackCounter, "s");
+            expr.setVariable(slackVar,-1);
+            _markerVars.put(cn,slackVar);
+            if (!cn.isRequired())
+            {
+                ++_slackCounter;
+                eminus = new SlackVariable(_slackCounter, "em");
+                expr.setVariable(eminus,1.0);
+                LinearExpression zRow = rowExpression(_objective);
+                SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
+                zRow.setVariable( eminus,sw.asDouble());
+                insertErrorVar(cn,eminus);
+                noteAddedVariable(eminus,_objective);
+            }
+        }
+        else
+        {
+            // cn is an equality
+            if (cn.isRequired())
+            {
+                ++_dummyCounter;
+                dummyVar = new DummyVariable(_dummyCounter, "d");
+                expr.setVariable(dummyVar,1.0);
+                _markerVars.put(cn,dummyVar);
+                if (fTraceOn) traceprint("Adding dummyVar == d" + _dummyCounter);
+            }
+            else
+            {
+                ++_slackCounter;
+                eplus = new SlackVariable (_slackCounter, "ep");
+                eminus = new SlackVariable (_slackCounter, "em");
+
+                expr.setVariable( eplus,-1.0);
+                expr.setVariable( eminus,1.0);
+                _markerVars.put(cn,eplus);
+                LinearExpression zRow = rowExpression(_objective);
+                SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
+                double swCoeff = sw.asDouble();
+                if (swCoeff == 0)
+                {
+                    if (fTraceOn) traceprint("sw == " + sw);
+                    if (fTraceOn) traceprint("cn == " + cn);
+                    if (fTraceOn) traceprint("adding " + eplus + " and " + eminus + " with swCoeff == " + swCoeff);
+                }
+                zRow.setVariable(eplus,swCoeff);
+                noteAddedVariable(eplus,_objective);
+                zRow.setVariable(eminus,swCoeff);
+                noteAddedVariable(eminus,_objective);
+                insertErrorVar(cn,eminus);
+                insertErrorVar(cn,eplus);
+                if (cn.isStayConstraint())
+                {
+                    _stayPlusErrorVars.addElement(eplus);
+                    _stayMinusErrorVars.addElement(eminus);
+                }
+                else if (cn.isEditConstraint())
+                {
+                    eplus_eminus.addElement(eplus);
+                    eplus_eminus.addElement(eminus);
+                    // FIXME: In the original Java implementation, this was a
+                    // setValue call; since prevEConstant is passed in by reference,
+                    // this means the value should be reflected outside this method.
+                    // Does this actually matter?
+                    prevEConstant = new Double(cnExpr.constant());
+                }
+            }
+        }
+
+        if (expr.constant() < 0)
+        {
+           expr.multiplyMe(-1);
+        }
+
+        if (fTraceOn)
+        {
+            fnexitprint("returning " + expr);
+        }
+        return expr;
     }
-
-    if (cn.isInequality()) {
-      ++_slackCounter;
-      slackVar = new SlackVariable (_slackCounter, "s");
-      expr.setVariable(slackVar,-1);
-      _markerVars.put(cn,slackVar);
-      if (!cn.isRequired()) {
-	++_slackCounter;
-	eminus = new SlackVariable(_slackCounter, "em");
-	expr.setVariable(eminus,1.0);
-	LinearExpression zRow = rowExpression(_objective);
-	SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
-	zRow.setVariable( eminus,sw.asDouble());
-	insertErrorVar(cn,eminus);
-	noteAddedVariable(eminus,_objective);
-      }
-    }
-    else {
-      // cn is an equality
-      if (cn.isRequired()) {
-	++_dummyCounter;
-	dummyVar = new DummyVariable(_dummyCounter, "d");
-	expr.setVariable(dummyVar,1.0);
-	_markerVars.put(cn,dummyVar);
-	if (fTraceOn) traceprint("Adding dummyVar == d" + _dummyCounter);
-      } else {
-	++_slackCounter;
-	eplus = new SlackVariable (_slackCounter, "ep");
-	eminus = new SlackVariable (_slackCounter, "em");
-
-	expr.setVariable( eplus,-1.0);
-	expr.setVariable( eminus,1.0);
-	_markerVars.put(cn,eplus);
-	LinearExpression zRow = rowExpression(_objective);
-	SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
-	double swCoeff = sw.asDouble();
-	if (swCoeff == 0) {
-	  if (fTraceOn) traceprint("sw == " + sw);
-	  if (fTraceOn) traceprint("cn == " + cn);
-	  if (fTraceOn) traceprint("adding " + eplus + " and " + eminus + " with swCoeff == " + swCoeff);
-	}
-	zRow.setVariable(eplus,swCoeff);
-	noteAddedVariable(eplus,_objective);
-	zRow.setVariable(eminus,swCoeff);
-	noteAddedVariable(eminus,_objective);
-	insertErrorVar(cn,eminus);
-	insertErrorVar(cn,eplus);
-	if (cn.isStayConstraint()) {
-	  _stayPlusErrorVars.addElement(eplus);
-	  _stayMinusErrorVars.addElement(eminus);
-	}
-	else if (cn.isEditConstraint()) {
-          eplus_eminus.addElement(eplus);
-          eplus_eminus.addElement(eminus);
-          prevEConstant.setValue(cnExpr.constant());
-	}
-      }
-    }
-
-    if (expr.constant() < 0)
-      expr.multiplyMe(-1);
-
-    if (fTraceOn) fnexitprint("returning " + expr);
-    return expr;
-  }
 
   // Minimize the value of the objective.  (The tableau should already
   // be feasible.)
@@ -993,39 +1059,39 @@ public class SimplexSolver extends Tableau
       double objectiveCoeff = 0;
       Hashtable terms = zRow.terms();
       for (Enumeration e = terms.keys(); e.hasMoreElements() ; ) {
-	AbstractVariable v = (AbstractVariable) e.nextElement();
-	double c = ((ClDouble) terms.get(v)).doubleValue();
-	if (v.isPivotable() && c < objectiveCoeff) {
-	  objectiveCoeff = c;
-	  entryVar = v;
-	}
+  AbstractVariable v = (AbstractVariable) e.nextElement();
+  double c = ((Double) terms.get(v)).doubleValue();
+  if (v.isPivotable() && c < objectiveCoeff) {
+    objectiveCoeff = c;
+    entryVar = v;
+  }
       }
       if (objectiveCoeff >= -_epsilon || entryVar == null)
-	return;
+  return;
       if (fTraceOn) traceprint("entryVar == " + entryVar + ", objectiveCoeff == " + objectiveCoeff);
 
       double minRatio = Double.MAX_VALUE;
       Set columnVars = (Set) _columns.get(entryVar);
       double r = 0.0;
       for (Enumeration e = columnVars.elements(); e.hasMoreElements() ; ) {
-	AbstractVariable v = (AbstractVariable) e.nextElement();
-	if (fTraceOn) traceprint("Checking " + v);
-	if (v.isPivotable()) {
-	  final LinearExpression expr = rowExpression(v);
-	  double coeff = expr.coefficientFor(entryVar);
-	  if (fTraceOn) traceprint("pivotable, coeff = " + coeff);
-	  if (coeff < 0.0) {
-	    r = - expr.constant() / coeff;
-	    if (r < minRatio) {
-	      if (fTraceOn) traceprint("New minratio == " + r);
-	      minRatio = r;
-	      exitVar = v;
-	    }
-	  }
-	}
+  AbstractVariable v = (AbstractVariable) e.nextElement();
+  if (fTraceOn) traceprint("Checking " + v);
+  if (v.isPivotable()) {
+    final LinearExpression expr = rowExpression(v);
+    double coeff = expr.coefficientFor(entryVar);
+    if (fTraceOn) traceprint("pivotable, coeff = " + coeff);
+    if (coeff < 0.0) {
+      r = - expr.constant() / coeff;
+      if (r < minRatio) {
+        if (fTraceOn) traceprint("New minratio == " + r);
+        minRatio = r;
+        exitVar = v;
+      }
+    }
+  }
       }
       if (minRatio == Double.MAX_VALUE) {
-	throw new InternalError("Objective function is unbounded in optimize");
+  throw new InternalError("Objective function is unbounded in optimize");
       }
       pivot(entryVar, exitVar);
       if (fTraceOn) traceprint(this.toString());
@@ -1070,11 +1136,11 @@ public class SimplexSolver extends Tableau
 
     for (int i = 0; i < _stayPlusErrorVars.size(); i++) {
       LinearExpression expr =
-	rowExpression((AbstractVariable) _stayPlusErrorVars.elementAt(i) );
+  rowExpression((AbstractVariable) _stayPlusErrorVars.elementAt(i) );
       if (expr == null )
-	expr = rowExpression((AbstractVariable) _stayMinusErrorVars.elementAt(i));
+  expr = rowExpression((AbstractVariable) _stayMinusErrorVars.elementAt(i));
       if (expr != null)
-	expr.set_constant(0.0);
+  expr.set_constant(0.0);
     }
   }
 
@@ -1094,7 +1160,7 @@ public class SimplexSolver extends Tableau
     if (fTraceOn) traceprint(this.toString());
 
     for (Enumeration e = _externalParametricVars.elements();
-	 e.hasMoreElements() ; ) {
+   e.hasMoreElements() ; ) {
       Variable v = (Variable) e.nextElement();
       if (rowExpression(v) != null) {
         System.err.println("Error: variable" + v +
@@ -1123,46 +1189,9 @@ public class SimplexSolver extends Tableau
 
     Set cnset = (Set) _errorVars.get(var);
     if (cnset == null)
-      _errorVars.put(cn,cnset = new Set());
-    cnset.insert(var);
-  }
+        _errorVars.put(cn,cnset = new Set());
+        cnset.insert(var);
+    }
 
 
-  //// BEGIN PRIVATE INSTANCE FIELDS
-
-  // the arrays of positive and negative error vars for the stay constraints
-  // (need both positive and negative since they have only non-negative values)
-  private Vector _stayMinusErrorVars;
-  private Vector _stayPlusErrorVars;
-
-  // give error variables for a non required constraint,
-  // maps to SlackVariable-s
-  private Hashtable _errorVars; // map Constraint to Set (of Variable)
-
-
-  // Return a lookup table giving the marker variable for each
-  // constraint (used when deleting a constraint).
-  private Hashtable _markerVars; // map Constraint to Variable
-
-  private ObjectiveVariable _objective;
-
-  // Map edit variables to EditInfo-s.
-  // EditInfo instances contain all the information for an
-  // edit constraint (the edit plus/minus vars, the index [for old-style
-  // resolve(Vector...) interface], and the previous value.
-  // (EditInfo replaces the parallel vectors from the Smalltalk impl.)
-  private Hashtable _editVarMap; // map Variable to a EditInfo
-
-  private long _slackCounter;
-  private long _artificialCounter;
-  private long _dummyCounter;
-
-  private Vector _resolve_pair;
-
-  private double _epsilon;
-
-  private boolean _fOptimizeAutomatically;
-  private boolean _fNeedsSolving;
-
-  private Stack _stkCedcns;
 }

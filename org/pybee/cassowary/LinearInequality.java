@@ -102,22 +102,25 @@ public class LinearInequality extends LinearConstraint
     this(clv,op_enum,val,Strength.required,1.0);
   }
 
-  public LinearInequality(LinearExpression cle1,
-			    byte op_enum,
-			    LinearExpression cle2,
-			    Strength strength,
-			    double weight)
-       throws InternalError
-  {
-    super(((LinearExpression) cle2.clone()),strength,weight);
-    if (op_enum == CL.GEQ) {
-      _expression.multiplyMe(-1.0);
-      _expression.addExpression(cle1);
-    } else if (op_enum == CL.LEQ) {
-      _expression.addExpression(cle1,-1.0);
-    } else // the operator was invalid
-      throw new InternalError("Invalid operator in LinearInequality constructor");
-  }
+    public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2, Strength strength, double weight)
+            throws InternalError
+    {
+        super(((LinearExpression) cle2.clone()), strength, weight);
+        if (op_enum == CL.GEQ)
+        {
+            _expression.multiplyMe(-1.0);
+            _expression.addExpression(cle1);
+        }
+        else if (op_enum == CL.LEQ)
+        {
+            _expression.addExpression(cle1,-1.0);
+        }
+        else
+        {
+            // the operator was invalid
+            throw new InternalError("Invalid operator in LinearInequality constructor");
+        }
+    }
 
   public LinearInequality(LinearExpression cle1,
 			    byte op_enum,

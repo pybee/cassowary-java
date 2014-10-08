@@ -17,7 +17,6 @@ JAVAFILES = \
 	SymbolicWeight.java \
 	Variable.java \
 	Point.java \
-	ClDouble.java \
 	Tableau.java \
 	SimplexSolver.java \
 	ConstraintNotFound.java \
@@ -42,6 +41,6 @@ test:
 	java org.pybee.cassowary.ClTests
 
 
-CassowaryLayout.jar:
+CassowaryLayout.jar: org/pybee/cassowary/*.java
 	javac org/pybee/cassowary/*.java
 	jar -cvf CassowaryLayout.jar org/pybee/cassowary/*.java
