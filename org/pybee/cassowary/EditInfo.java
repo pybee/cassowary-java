@@ -1,8 +1,6 @@
 package org.pybee.cassowary;
 
 
-import java.util.*;
-
 // EditInfo is a privately-used class
 // that just wraps a constraint, its positive and negative
 // error variables, and its prior edit constant.

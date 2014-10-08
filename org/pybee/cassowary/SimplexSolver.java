@@ -1,6 +1,12 @@
 package org.pybee.cassowary;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+import java.util.Vector;
 
 
 public class SimplexSolver extends Tableau
@@ -71,8 +77,6 @@ public class SimplexSolver extends Tableau
         _rows.put(_objective,e);
         _stkCedcns = new Stack<Integer>();
         _stkCedcns.push(new Integer(0));
-
-        if (fTraceOn) traceprint("objective expr == " + rowExpression(_objective));
     }
 
     // Convenience function for creating a linear inequality constraint
@@ -104,8 +108,6 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addConstraint(Constraint cn)
             throws RequiredFailure, InternalError
     {
-        if (fTraceOn) fnenterprint("addConstraint: " + cn);
-
         Vector eplus_eminus = new Vector<Double>(2);
         Double prevEConstant = new Double(0.0);
         LinearExpression expr = newExpression(cn, /* output to: */
@@ -161,8 +163,6 @@ public class SimplexSolver extends Tableau
     public final boolean addConstraintNoException(Constraint cn)
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("addConstraintNoException: " + cn);
-
         try
         {
             addConstraint(cn);
@@ -270,52 +270,6 @@ public class SimplexSolver extends Tableau
         }
     }
 
-  //   // Add weak stays to the x and y parts of each point. These have
-  //   // increasing weights so that the solver will try to satisfy the x
-  //   // and y stays on the same point, rather than the x stay on one and
-  //   // the y stay on another.
-  //   public final SimplexSolver addPointStays(Vector listOfPoints)
-  //           throws RequiredFailure, InternalError
-  //   {
-  //       if (fTraceOn) fnenterprint("addPointStays" + listOfPoints);
-  //       double weight = 1.0;
-  //       final double multiplier = 2.0;
-  //       for (int i = 0; i < listOfPoints.size(); i++)
-  //       {
-  //           addPointStay((Point) listOfPoints.elementAt(i),weight);
-  //           weight *= multiplier;
-  //       }
-  //       return this;
-  //   }
-
-  // public final SimplexSolver addPointStay(Variable vx, Variable vy, double weight)
-  //      throws RequiredFailure, InternalError
-  // {
-  //   addStay(vx,Strength.weak,weight);
-  //   addStay(vy,Strength.weak,weight);
-  //   return  this;
-  // }
-
-  // public final SimplexSolver addPointStay(Variable vx,
-  //                                           Variable vy)
-  //      throws RequiredFailure, InternalError
-  // { addPointStay(vx,vy,1.0); return this; }
-
-  // public final SimplexSolver addPointStay(Point clp, double weight)
-  //      throws RequiredFailure, InternalError
-  // {
-  //   addStay(clp.X(),Strength.weak,weight);
-  //   addStay(clp.Y(),Strength.weak,weight);
-  //   return this;
-  // }
-
-  // public final SimplexSolver addPointStay(Point clp)
-  //      throws RequiredFailure, InternalError
-  // {
-  //   addPointStay(clp,1.0);
-  //   return this;
-  // }
-
     // Add a stay of the given strength (default to weak) of v to the tableau
     public final SimplexSolver addStay(Variable v, Strength strength, double weight)
             throws RequiredFailure, InternalError
@@ -344,9 +298,6 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver removeConstraint(Constraint cn)
             throws ConstraintNotFound, InternalError
     {
-        if (fTraceOn) fnenterprint("removeConstraint: " + cn);
-        if (fTraceOn) traceprint(this.toString());
-
         _fNeedsSolving = true;
 
         resetStayConstants();
@@ -354,8 +305,6 @@ public class SimplexSolver extends Tableau
         LinearExpression zRow = rowExpression(_objective);
 
         Set<AbstractVariable> eVars = _errorVars.get(cn);
-        if (fTraceOn) traceprint("eVars == " + eVars);
-
         if (eVars != null) {
             for (AbstractVariable clv: eVars)
             {
@@ -379,14 +328,10 @@ public class SimplexSolver extends Tableau
             throw new ConstraintNotFound();
         }
 
-        if (fTraceOn) traceprint("Looking to remove var " + marker);
-
         if (rowExpression(marker) == null)
         {
             // not in the basis, so need to do some work
             Set<AbstractVariable> col = _columns.get(marker);
-
-            if (fTraceOn) traceprint("Must pivot -- columns are " + col);
 
             AbstractVariable exitVar = null;
             double minRatio = 0.0;
@@ -395,7 +340,6 @@ public class SimplexSolver extends Tableau
                 if (v.isRestricted() ) {
                     final LinearExpression expr = rowExpression( v);
                     double coeff = expr.coefficientFor(marker);
-                    if (fTraceOn) traceprint("Marker " + marker + "'s coefficient in " + expr + " is " + coeff);
                     if (coeff < 0.0)
                     {
                         double r = -expr.constant() / coeff;
@@ -409,7 +353,6 @@ public class SimplexSolver extends Tableau
             }
             if (exitVar == null)
             {
-                if (fTraceOn) traceprint("exitVar is still null");
                 for (AbstractVariable v: col)
                 {
                     if (v.isRestricted())
@@ -509,7 +452,6 @@ public class SimplexSolver extends Tableau
     public final void reset()
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("reset");
         throw new InternalError("reset not implemented");
     }
 
@@ -524,7 +466,6 @@ public class SimplexSolver extends Tableau
     public final void resolve(Vector<Double> newEditConstants)
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("resolve" + newEditConstants);
         for (Variable v: _editVarMap.keySet())
         {
             EditInfo cei = _editVarMap.get(v);
@@ -559,7 +500,6 @@ public class SimplexSolver extends Tableau
     public final void resolve()
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("resolve()");
         dualOptimize();
         setExternalVariables();
         _infeasibleRows.clear();
@@ -574,7 +514,6 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver suggestValue(Variable v, double x)
             throws CassowaryError
     {
-        if (fTraceOn) fnenterprint("suggestValue(" + v + ", " + x + ")");
         EditInfo cei = _editVarMap.get(v);
         if (cei == null)
         {
@@ -670,10 +609,6 @@ public class SimplexSolver extends Tableau
                 // cannot have a required failure, since we add w/ weak
                 throw new InternalError("Error in addVar -- required failure is impossible");
             }
-            if (fTraceOn)
-            {
-                traceprint("added initial stay on " + v);
-            }
         }
         return this;
     }
@@ -726,23 +661,16 @@ public class SimplexSolver extends Tableau
   protected final void addWithArtificialVariable(LinearExpression expr)
        throws RequiredFailure, InternalError
     {
-        if (fTraceOn) fnenterprint("addWithArtificialVariable: " + expr);
-
         SlackVariable av = new SlackVariable(++_artificialCounter,"a");
         ObjectiveVariable az = new ObjectiveVariable("az");
         LinearExpression azRow = (LinearExpression) expr.clone();
 
-        if (fTraceOn) traceprint("before addRows:\n" + this);
-
         addRow(az, azRow);
         addRow(av, expr);
 
-        if (fTraceOn) traceprint("after addRows:\n" + this);
         optimize(az);
 
         LinearExpression azTableauRow = rowExpression(az);
-
-        if (fTraceOn) traceprint("azTableauRow.constant() == " + azTableauRow.constant());
 
         if (!CL.approx(azTableauRow.constant(), 0.0))
         {
@@ -780,11 +708,9 @@ public class SimplexSolver extends Tableau
     protected final boolean tryAddingDirectly(LinearExpression expr)
             throws RequiredFailure
     {
-        if (fTraceOn) fnenterprint("tryAddingDirectly: " + expr );
         final AbstractVariable subject = chooseSubject(expr);
-        if (subject == null )
+        if (subject == null)
         {
-            if (fTraceOn) fnexitprint("returning false");
             return false;
         }
         expr.newSubject(subject);
@@ -793,7 +719,6 @@ public class SimplexSolver extends Tableau
             substituteOut(subject, expr);
         }
         addRow(subject, expr);
-        if (fTraceOn) fnexitprint("returning true");
         return true; // successfully added directly
     }
 
@@ -818,7 +743,6 @@ public class SimplexSolver extends Tableau
     protected final AbstractVariable chooseSubject(LinearExpression expr)
             throws RequiredFailure
     {
-        if (fTraceOn) fnenterprint("chooseSubject: " + expr);
         AbstractVariable subject = null; // the current best subject, if any
 
         boolean foundUnrestricted = false;
@@ -914,7 +838,6 @@ public class SimplexSolver extends Tableau
     // to resolveing. --02/16/99 gjb)
     protected final void deltaEditConstant(double delta, AbstractVariable plusErrorVar, AbstractVariable minusErrorVar)
     {
-        if (fTraceOn) fnenterprint("deltaEditConstant :" + delta + ", " + plusErrorVar + ", " + minusErrorVar);
         LinearExpression exprPlus = rowExpression(plusErrorVar);
         if (exprPlus != null )
         {
@@ -956,7 +879,6 @@ public class SimplexSolver extends Tableau
     protected final void dualOptimize()
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("dualOptimize:");
         final LinearExpression zRow = rowExpression(_objective);
         Iterator<AbstractVariable> elements = _infeasibleRows.iterator();
         while (elements.hasNext())
@@ -1003,10 +925,6 @@ public class SimplexSolver extends Tableau
     // appropriate weight in the objective function.
     protected final LinearExpression newExpression(Constraint cn, Vector eplus_eminus, Double prevEConstant)
     {
-        if (fTraceOn) fnenterprint("newExpression: " + cn);
-        if (fTraceOn) traceprint("cn.isInequality() == " + cn.isInequality());
-        if (fTraceOn) traceprint("cn.isRequired() == " + cn.isRequired());
-
         final LinearExpression cnExpr = cn.expression();
         LinearExpression expr = new LinearExpression(cnExpr.constant());
         SlackVariable slackVar = new SlackVariable();
@@ -1055,7 +973,6 @@ public class SimplexSolver extends Tableau
                 dummyVar = new DummyVariable(_dummyCounter, "d");
                 expr.setVariable(dummyVar,1.0);
                 _markerVars.put(cn,dummyVar);
-                if (fTraceOn) traceprint("Adding dummyVar == d" + _dummyCounter);
             }
             else
             {
@@ -1069,12 +986,6 @@ public class SimplexSolver extends Tableau
                 LinearExpression zRow = rowExpression(_objective);
                 SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
                 double swCoeff = sw.asDouble();
-                if (swCoeff == 0)
-                {
-                    if (fTraceOn) traceprint("sw == " + sw);
-                    if (fTraceOn) traceprint("cn == " + cn);
-                    if (fTraceOn) traceprint("adding " + eplus + " and " + eminus + " with swCoeff == " + swCoeff);
-                }
                 zRow.setVariable(eplus,swCoeff);
                 noteAddedVariable(eplus,_objective);
                 zRow.setVariable(eminus,swCoeff);
@@ -1104,10 +1015,6 @@ public class SimplexSolver extends Tableau
            expr.multiplyMe(-1);
         }
 
-        if (fTraceOn)
-        {
-            fnexitprint("returning " + expr);
-        }
         return expr;
     }
 
@@ -1116,9 +1023,6 @@ public class SimplexSolver extends Tableau
     protected final void optimize(ObjectiveVariable zVar)
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("optimize: " + zVar);
-        if (fTraceOn) traceprint(this.toString());
-
         LinearExpression zRow = rowExpression(zVar);
         assert zRow != null;
         AbstractVariable entryVar = null;
@@ -1139,24 +1043,20 @@ public class SimplexSolver extends Tableau
             {
                 return;
             }
-            if (fTraceOn) traceprint("entryVar == " + entryVar + ", objectiveCoeff == " + objectiveCoeff);
 
             double minRatio = Double.MAX_VALUE;
             Set<AbstractVariable> columnVars = _columns.get(entryVar);
             double r = 0.0;
             for (AbstractVariable v: columnVars) {
-                if (fTraceOn) traceprint("Checking " + v);
                 if (v.isPivotable())
                 {
                     final LinearExpression expr = rowExpression(v);
                     double coeff = expr.coefficientFor(entryVar);
-                    if (fTraceOn) traceprint("pivotable, coeff = " + coeff);
                     if (coeff < 0.0)
                     {
                         r = - expr.constant() / coeff;
                         if (r < minRatio)
                         {
-                            if (fTraceOn) traceprint("New minratio == " + r);
                             minRatio = r;
                             exitVar = v;
                         }
@@ -1168,7 +1068,6 @@ public class SimplexSolver extends Tableau
                 throw new InternalError("Objective function is unbounded in optimize");
             }
             pivot(entryVar, exitVar);
-            if (fTraceOn) traceprint(this.toString());
         }
     }
 
@@ -1177,8 +1076,6 @@ public class SimplexSolver extends Tableau
     protected final void pivot(AbstractVariable entryVar, AbstractVariable exitVar)
             throws InternalError
     {
-        if (fTraceOn) fnenterprint("pivot: " + entryVar + ", " + exitVar);
-
         // the entryVar might be non-pivotable if we're doing a removeConstraint --
         // otherwise it should be a pivotable variable -- enforced at call sites,
         // hopefully
@@ -1205,8 +1102,6 @@ public class SimplexSolver extends Tableau
     // Reset the constant in this expression to 0.
     protected final void resetStayConstants()
     {
-        if (fTraceOn) fnenterprint("resetStayConstants");
-
         for (int i = 0; i < _stayPlusErrorVars.size(); i++) {
             LinearExpression expr = rowExpression(_stayPlusErrorVars.get(i) );
             if (expr == null)
@@ -1232,9 +1127,6 @@ public class SimplexSolver extends Tableau
     // them.
     protected final void setExternalVariables()
     {
-        if (fTraceOn) fnenterprint("setExternalVariables:");
-        if (fTraceOn) traceprint(this.toString());
-
         for (Variable v: _externalParametricVars)
         {
             if (rowExpression(v) != null)
@@ -1249,8 +1141,6 @@ public class SimplexSolver extends Tableau
         {
             Variable v = (Variable) av;
             LinearExpression expr = rowExpression(v);
-            if (fTraceOn) debugprint("v == " + v);
-            if (fTraceOn) debugprint("expr == " + expr);
             v.change_value(expr.constant());
         }
 
@@ -1261,8 +1151,6 @@ public class SimplexSolver extends Tableau
     // the _errorVars set, creating the mapping with put as necessary
     protected final void insertErrorVar(Constraint cn, AbstractVariable var)
     {
-        if (fTraceOn) fnenterprint("insertErrorVar:" + cn + ", " + var);
-
         Set cnset = (Set) _errorVars.get(var);
         if (cnset == null)
         {
@@ -1270,6 +1158,5 @@ public class SimplexSolver extends Tableau
             _errorVars.put(cn, cnset);
             cnset.add(var);
         }
-
     }
 }

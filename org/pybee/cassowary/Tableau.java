@@ -1,9 +1,11 @@
 package org.pybee.cassowary;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 
-class Tableau extends CL
+class Tableau
 {
     // _columns is a mapping from variables which occur in expressions to the
     // set of basic variables whose expressions contain them
@@ -43,7 +45,6 @@ class Tableau extends CL
     // Update the column cross-indices.
     public final void noteRemovedVariable(AbstractVariable v, AbstractVariable subject)
     {
-        if (fTraceOn) fnenterprint("noteRemovedVariable: " + v + ", " + subject);
         if (subject != null)
         {
             _columns.get(v).remove(subject);
@@ -54,7 +55,6 @@ class Tableau extends CL
     // update column cross indices
     public final void noteAddedVariable(AbstractVariable v, AbstractVariable subject)
     {
-        if (fTraceOn) fnenterprint("noteAddedVariable: " + v + ", " + subject);
         if (subject != null)
         {
             insertColVar(v,subject);
@@ -123,8 +123,6 @@ class Tableau extends CL
     // (also, expr better be allocated on the heap!)
     protected final void addRow(AbstractVariable var, LinearExpression expr)
     {
-        if (fTraceOn) fnenterprint("addRow: " + var + ", " + expr);
-
         // for each variable in expr, add var to the set of rows which
         // have that variable in their expression
         _rows.put(var,expr);
@@ -141,14 +139,12 @@ class Tableau extends CL
         {
             _externalRows.add((Variable) var);
         }
-        if (fTraceOn) traceprint(this.toString());
     }
 
     // Remove v from the tableau -- remove the column cross indices for v
     // and remove v from every expression in rows in which v occurs
     protected final void removeColumn(AbstractVariable var)
     {
-        if (fTraceOn) fnenterprint("removeColumn:" + var);
         // remove the rows with the variables in varset
         Set<AbstractVariable> rows = _columns.remove(var);
 
@@ -157,13 +153,6 @@ class Tableau extends CL
             {
                 LinearExpression expr = _rows.get(clv);
                 expr.terms().remove(var);
-            }
-        }
-        else
-        {
-            if (fTraceOn)
-            {
-                debugprint("Could not find var " + var + " in _columns");
             }
         }
 
@@ -179,8 +168,6 @@ class Tableau extends CL
     protected final LinearExpression removeRow(AbstractVariable var)
            throws InternalError
     {
-        if (fTraceOn) fnenterprint("removeRow:" + var);
-
         LinearExpression expr = _rows.get(var);
         assert expr != null;
 
@@ -191,9 +178,6 @@ class Tableau extends CL
             Set varset = (Set) _columns.get(clv);
             if (varset != null)
             {
-                if (fTraceOn) {
-                    debugprint("removing from varset " + var);
-                }
                 varset.remove(var);
             }
         }
@@ -205,9 +189,6 @@ class Tableau extends CL
             _externalRows.remove(var);
         }
         _rows.remove(var);
-        if (fTraceOn) {
-            fnexitprint("returning " + expr);
-        }
         return expr;
     }
 
@@ -215,9 +196,6 @@ class Tableau extends CL
     // oldVar should now be a basic variable
     protected final void substituteOut(AbstractVariable oldVar, LinearExpression expr)
     {
-        if (fTraceOn) fnenterprint("substituteOut:" + oldVar + ", " + expr);
-        if (fTraceOn) traceprint(this.toString());
-
         for (AbstractVariable v: _columns.get(oldVar))
         {
             LinearExpression row = _rows.get(v);
@@ -254,7 +232,6 @@ class Tableau extends CL
 
     protected final LinearExpression rowExpression(AbstractVariable v)
     {
-        // if (fTraceOn) fnenterprint("rowExpression:" + v);
         return _rows.get(v);
     }
 }

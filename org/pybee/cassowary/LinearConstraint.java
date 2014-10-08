@@ -6,19 +6,19 @@ class LinearConstraint extends Constraint
 
     public LinearConstraint(LinearExpression cle, Strength strength, double weight)
     {
-        super(strength,weight);
+        super(strength, weight);
         _expression = cle;
     }
 
     public LinearConstraint(LinearExpression cle, Strength strength)
     {
-        super(strength,1.0);
+        super(strength, 1.0);
         _expression = cle;
     }
 
     public LinearConstraint(LinearExpression cle)
     {
-        super(Strength.required,1.0);
+        super(Strength.required, 1.0);
         _expression = cle;
     }
 

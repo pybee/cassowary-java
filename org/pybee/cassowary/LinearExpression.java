@@ -1,20 +1,16 @@
 package org.pybee.cassowary;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 
-public class LinearExpression extends CL
+public class LinearExpression
 {
     private double _constant;
     private Hashtable<AbstractVariable, Double> _terms;
 
     public LinearExpression(AbstractVariable clv, double value, double constant)
     {
-        if (CL.fGC)
-        {
-            System.err.println("new LinearExpression");
-        }
-
         _constant = constant;
         _terms = new Hashtable<AbstractVariable, Double>();
         if (clv != null)
@@ -43,15 +39,9 @@ public class LinearExpression extends CL
         this(clv, 1.0, 0.0);
     }
 
-
     // for use by the clone method
     protected LinearExpression(double constant, Hashtable<AbstractVariable, Double> terms)
     {
-        if (CL.fGC)
-        {
-            System.err.println("clone LinearExpression");
-        }
-
         _constant = constant;
         _terms = new Hashtable<AbstractVariable, Double>();
 
@@ -60,7 +50,6 @@ public class LinearExpression extends CL
             _terms.put(clv, terms.get(clv));
         }
     }
-
 
     public LinearExpression multiplyMe(double x)
     {
@@ -118,7 +107,6 @@ public class LinearExpression extends CL
     {
         return ((LinearExpression) clone()).addVariable(var,-1.0);
     }
-
 
     public final LinearExpression divide(double x)
             throws NonlinearExpression
@@ -194,11 +182,6 @@ public class LinearExpression extends CL
     public final LinearExpression addVariable(AbstractVariable v, double c)
     {
         // body largely duplicated below
-        if (fTraceOn)
-        {
-            fnenterprint("addVariable:" + v + ", " + c);
-        }
-
         Double coeff = _terms.get(v);
         if (coeff != null)
         {
@@ -241,10 +224,6 @@ public class LinearExpression extends CL
     public final LinearExpression addVariable(AbstractVariable v, double c, AbstractVariable subject, Tableau solver)
     {
         // body largely duplicated above
-        if (fTraceOn) {
-            fnenterprint("addVariable:" + v + ", " + c + ", " + subject + ", ...");
-        }
-
         Double coeff = _terms.get(v);
         if (coeff != null)
         {
@@ -302,12 +281,6 @@ public class LinearExpression extends CL
     public final void substituteOut(AbstractVariable var, LinearExpression expr,
             AbstractVariable subject, Tableau solver)
     {
-        if (fTraceOn)
-        {
-            fnenterprint("CLE:substituteOut: " + var + ", " + expr + ", " + subject + ", ...");
-            traceprint("this = " + this);
-        }
-
         double multiplier = ((Double) _terms.remove(var)).doubleValue();
         incrementConstant(multiplier * expr.constant());
 
@@ -335,10 +308,6 @@ public class LinearExpression extends CL
                 _terms.put(clv, new Double(multiplier * coeff));
                 solver.noteAddedVariable(clv,subject);
             }
-        }
-        if (fTraceOn)
-        {
-            traceprint("Now this is " + this);
         }
     }
 
@@ -380,9 +349,6 @@ public class LinearExpression extends CL
     // Returns the reciprocal, so changeSubject can use it, too
     public final double newSubject(AbstractVariable subject)
     {
-        if (fTraceOn) {
-            fnenterprint("newSubject:" + subject);
-        }
         Double coeff = _terms.remove(subject);
         double reciprocal = 1.0 / coeff.doubleValue();
         multiplyMe(-reciprocal);

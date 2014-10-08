@@ -16,7 +16,6 @@ JAVAFILES = \
 	Strength.java \
 	SymbolicWeight.java \
 	Variable.java \
-	Point.java \
 	Tableau.java \
 	SimplexSolver.java \
 	ConstraintNotFound.java \
@@ -28,8 +27,6 @@ JAVAFILES = \
 	TooDifficult.java \
 	CL.java \
         ClTests.java \
-	Set.java \
-	sym.java \
 	Timer.java
 
 

@@ -1,6 +1,6 @@
 package org.pybee.cassowary;
 
-import java.util.*;
+import java.util.Hashtable;
 
 
 public class Variable extends AbstractVariable
@@ -120,6 +120,22 @@ public class Variable extends AbstractVariable
     public static Hashtable getVarMap()
     {
         return _ourVarMap;
+    }
+
+    public LinearExpression times(double val)
+    {
+        return new LinearExpression(this, val);
+    }
+
+    public LinearExpression times(LinearExpression var)
+            throws NonlinearExpression
+    {
+        return var.times(new LinearExpression(this));
+    }
+
+    public LinearExpression plus(double val)
+    {
+        return new LinearExpression(this).plus(new LinearExpression(val));
     }
 
 }

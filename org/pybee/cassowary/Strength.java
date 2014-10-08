@@ -12,7 +12,7 @@ public class Strength
     public Strength(String name, double w1, double w2, double w3)
     {
         _name = name;
-        _symbolicWeight = new SymbolicWeight(w1,w2,w3);
+        _symbolicWeight = new SymbolicWeight(w1, w2, w3);
     }
 
     public boolean isRequired()
