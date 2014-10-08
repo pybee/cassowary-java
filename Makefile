@@ -40,6 +40,9 @@ all: CassowaryLayout.jar
 test:
 	java org.pybee.cassowary.ClTests
 
+clean:
+	rm CassowaryLayout.jar
+	find . -name "*.class" -exec rm {} \;
 
 CassowaryLayout.jar: org/pybee/cassowary/*.java
 	javac org/pybee/cassowary/*.java

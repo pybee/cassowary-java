@@ -1,18 +1,7 @@
-// $Id: LinearExpression.java,v 1.31 1999/04/20 00:26:32 gjb Exp $
-//
-// Cassowary Incremental Constraint Solver
-// Original Smalltalk Implementation by Alan Borning
-// This Java Implementation by Greg J. Badros, <gjb@cs.washington.edu>
-// http://www.cs.washington.edu/homes/gjb
-// (C) 1998, 1999 Greg J. Badros and Alan Borning
-// See ../LICENSE for legal details regarding this software
-//
-// LinearExpression
-//
-
 package org.pybee.cassowary;
 
 import java.util.*;
+
 
 public class LinearExpression extends CL
 {
@@ -66,9 +55,8 @@ public class LinearExpression extends CL
         _constant = constant;
         _terms = new Hashtable<AbstractVariable, Double>();
 
-        for (Enumeration e = terms.keys(); e.hasMoreElements() ; )
+        for (AbstractVariable clv: terms.keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             _terms.put(clv, terms.get(clv));
         }
     }
@@ -78,9 +66,8 @@ public class LinearExpression extends CL
     {
         _constant = _constant * x;
 
-        for (Enumeration e = _terms.keys() ; e.hasMoreElements(); )
+        for (AbstractVariable clv: _terms.keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             _terms.put(clv, new Double(_terms.get(clv) * x));
         }
         return this;
@@ -175,9 +162,8 @@ public class LinearExpression extends CL
     {
         incrementConstant(n * expr.constant());
 
-        for (Enumeration e = expr.terms().keys() ; e.hasMoreElements(); )
+        for (AbstractVariable clv: expr.terms().keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             double coeff = expr.terms().get(clv);
             addVariable(clv, coeff*n, subject, solver);
         }
@@ -189,9 +175,8 @@ public class LinearExpression extends CL
     {
         incrementConstant(n * expr.constant());
 
-        for (Enumeration e = expr.terms().keys() ; e.hasMoreElements(); )
+        for (AbstractVariable clv: expr.terms().keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             double coeff = expr.terms().get(clv);
             addVariable(clv,coeff*n);
         }
@@ -295,9 +280,8 @@ public class LinearExpression extends CL
             throw new InternalError("anyPivotableVariable called on a constant");
         }
 
-        for (Enumeration e = _terms.keys() ; e.hasMoreElements(); )
+        for (AbstractVariable clv: _terms.keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             if (clv.isPivotable())
             {
                 return clv;
@@ -327,9 +311,8 @@ public class LinearExpression extends CL
         double multiplier = ((Double) _terms.remove(var)).doubleValue();
         incrementConstant(multiplier * expr.constant());
 
-        for (Enumeration e = expr.terms().keys(); e.hasMoreElements(); )
+        for (AbstractVariable clv: expr.terms().keySet())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
             double coeff = ((Double) expr.terms().get(clv)).doubleValue();
             Double d_old_coeff = (Double) _terms.get(clv);
             if (d_old_coeff != null)
@@ -450,7 +433,7 @@ public class LinearExpression extends CL
     public final String toString()
     {
         StringBuffer bstr = new StringBuffer();
-        Enumeration e = _terms.keys();
+        Iterator<AbstractVariable> e = _terms.keySet().iterator();
 
         if (!CL.approx(_constant, 0.0) || _terms.size() == 0)
         {
@@ -462,13 +445,13 @@ public class LinearExpression extends CL
             {
                 return bstr.toString();
             }
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
+            AbstractVariable clv = e.next();
             Double coeff = _terms.get(clv);
             bstr.append(coeff.toString() + "*" + clv.toString());
         }
-        for (; e.hasMoreElements(); )
+        while (e.hasNext())
         {
-            AbstractVariable clv = (AbstractVariable) e.nextElement();
+            AbstractVariable clv = e.next();
             Double coeff = _terms.get(clv);
             bstr.append(" + " + coeff.toString() + "*" + clv.toString());
         }

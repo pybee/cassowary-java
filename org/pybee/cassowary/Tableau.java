@@ -1,251 +1,260 @@
-// $Id: Tableau.java,v 1.20 1999/04/20 00:26:42 gjb Exp $
-//
-// Cassowary Incremental Constraint Solver
-// Original Smalltalk Implementation by Alan Borning
-// This Java Implementation by Greg J. Badros, <gjb@cs.washington.edu>
-// http://www.cs.washington.edu/homes/gjb
-// (C) 1998, 1999 Greg J. Badros and Alan Borning
-// See ../LICENSE for legal details regarding this software
-//
-// Tableau
-
 package org.pybee.cassowary;
 
 import java.util.*;
 
+
 class Tableau extends CL
 {
-  // ctr is protected, since this only supports an ADT for
-  // the ClSimplexSolved class
-  protected Tableau()
-  {
-    _columns = new Hashtable();
-    _rows = new Hashtable();
-    _infeasibleRows = new Set();
-    _externalRows = new Set();
-    _externalParametricVars = new Set();
-  }
+    // _columns is a mapping from variables which occur in expressions to the
+    // set of basic variables whose expressions contain them
+    // i.e., it's a mapping from variables in expressions (a column) to the
+    // set of rows that contain them
+    protected Hashtable<AbstractVariable, Set<AbstractVariable>> _columns;
 
-  // Variable v has been removed from an expression.  If the
-  // expression is in a tableau the corresponding basic variable is
-  // subject (or if subject is nil then it's in the objective function).
-  // Update the column cross-indices.
-  public final void noteRemovedVariable(AbstractVariable v, AbstractVariable subject)
+    // _rows maps basic variables to the expressions for that row in the tableau
+    protected Hashtable<AbstractVariable, LinearExpression> _rows;
+
+    // the collection of basic variables that have infeasible rows
+    // (used when reoptimizing)
+    protected Set<AbstractVariable> _infeasibleRows;
+
+    // the set of rows where the basic variable is external
+    // this was added to the Java/C++ versions to reduce time in setExternalVariables()
+    protected Set<Variable> _externalRows;
+
+    // the set of external variables which are parametric
+    // this was added to the Java/C++ versions to reduce time in setExternalVariables()
+    protected Set<Variable> _externalParametricVars;
+
+    // ctr is protected, since this only supports an ADT for
+    // the SimplexSolver class
+    protected Tableau()
     {
-      if (fTraceOn) fnenterprint("noteRemovedVariable: " + v + ", " + subject);
-      if (subject != null) {
-	((Set) _columns.get(v)).remove(subject);
-      }
+        _columns = new Hashtable<AbstractVariable, Set<AbstractVariable>>();
+        _rows = new Hashtable<AbstractVariable, LinearExpression>();
+        _infeasibleRows = new HashSet<AbstractVariable>();
+        _externalRows = new HashSet<Variable>();
+        _externalParametricVars = new HashSet<Variable>();
     }
 
-  // v has been added to the linear expression for subject
-  // update column cross indices
-  public final void noteAddedVariable(AbstractVariable v, AbstractVariable subject)
+    // Variable v has been removed from an expression.  If the
+    // expression is in a tableau the corresponding basic variable is
+    // subject (or if subject is nil then it's in the objective function).
+    // Update the column cross-indices.
+    public final void noteRemovedVariable(AbstractVariable v, AbstractVariable subject)
     {
-      if (fTraceOn) fnenterprint("noteAddedVariable: " + v + ", " + subject);
-      if (subject != null) {
-	insertColVar(v,subject);
-      }
-    }
-
-  // Originally from Michael Noth <noth@cs>
-  public String getInternalInfo() {
-    StringBuffer retstr = new StringBuffer("Tableau Information:\n");
-    retstr.append("Rows: " + _rows.size());
-    retstr.append(" (= " + (_rows.size() - 1) + " constraints)");
-    retstr.append("\nColumns: " + _columns.size());
-    retstr.append("\nInfeasible Rows: " + _infeasibleRows.size());
-    retstr.append("\nExternal basic variables: " + _externalRows.size());
-    retstr.append("\nExternal parametric variables: ");
-    retstr.append(_externalParametricVars.size());
-    retstr.append("\n");
-
-    return retstr.toString();
-  }
-
-  public String toString()
-    {
-      StringBuffer bstr = new StringBuffer("Tableau:\n");
-      for (Enumeration e = _rows.keys(); e.hasMoreElements(); ) {
-	AbstractVariable clv = (AbstractVariable) e.nextElement();
-	LinearExpression expr = (LinearExpression) _rows.get(clv);
-	bstr.append(clv.toString());
-	bstr.append(" <==> ");
-	bstr.append(expr.toString());
-	bstr.append("\n");
-      }
-
-      bstr.append("\nColumns:\n");
-      bstr.append(_columns.toString());
-
-      bstr.append("\nInfeasible rows: ");
-      bstr.append(_infeasibleRows.toString());
-
-      bstr.append("External basic variables: ");
-      bstr.append(_externalRows.toString());
-
-      bstr.append("External parametric variables: ");
-      bstr.append(_externalParametricVars.toString());
-
-      return bstr.toString();
-    }
-
-  // Convenience function to insert a variable into
-  // the set of rows stored at _columns[param_var],
-  // creating a new set if needed
-  private final void insertColVar(AbstractVariable param_var,
-                                  AbstractVariable rowvar)
-  {
-    Set rowset = (Set) _columns.get(param_var);
-    if (rowset == null)
-      _columns.put(param_var,rowset = new Set());
-    rowset.insert(rowvar);
-  }
-
-  // Add v=expr to the tableau, update column cross indices
-  // v becomes a basic variable
-  // expr is now owned by Tableau class,
-  // and Tableauis responsible for deleting it
-  // (also, expr better be allocated on the heap!)
-  protected final void addRow(AbstractVariable var, LinearExpression expr)
-    {
-      if (fTraceOn) fnenterprint("addRow: " + var + ", " + expr);
-
-      // for each variable in expr, add var to the set of rows which
-      // have that variable in their expression
-      _rows.put(var,expr);
-
-      for (Enumeration e = expr.terms().keys() ; e.hasMoreElements(); ) {
-        AbstractVariable clv = (AbstractVariable) e.nextElement();
-	insertColVar(clv,var);
-        if (clv.isExternal()) {
-          _externalParametricVars.insert(clv);
+        if (fTraceOn) fnenterprint("noteRemovedVariable: " + v + ", " + subject);
+        if (subject != null)
+        {
+            _columns.get(v).remove(subject);
         }
-      }
-      if (var.isExternal()) {
-	_externalRows.insert(var);
-      }
-      if (fTraceOn) traceprint(this.toString());
     }
 
-  // Remove v from the tableau -- remove the column cross indices for v
-  // and remove v from every expression in rows in which v occurs
-  protected final void removeColumn(AbstractVariable var)
+    // v has been added to the linear expression for subject
+    // update column cross indices
+    public final void noteAddedVariable(AbstractVariable v, AbstractVariable subject)
     {
-      if (fTraceOn) fnenterprint("removeColumn:" + var);
-      // remove the rows with the variables in varset
-
-      Set rows = (Set) _columns.remove(var);
-
-      if (rows != null) {
-        for (Enumeration e = rows.elements() ; e.hasMoreElements(); ) {
-          AbstractVariable clv = (AbstractVariable) e.nextElement();
-          LinearExpression expr = (LinearExpression) _rows.get(clv);
-          expr.terms().remove(var);
+        if (fTraceOn) fnenterprint("noteAddedVariable: " + v + ", " + subject);
+        if (subject != null)
+        {
+            insertColVar(v,subject);
         }
-      } else {
-        if (fTraceOn) debugprint("Could not find var " + var + " in _columns");
-      }
-
-      if (var.isExternal()) {
-	_externalRows.remove(var);
-	_externalParametricVars.remove(var);
-      }
     }
 
-  // Remove the basic variable v from the tableau row v=expr
-  // Then update column cross indices
-  protected final LinearExpression removeRow(AbstractVariable var)
-       throws InternalError
+    // Originally from Michael Noth <noth@cs>
+    public String getInternalInfo() {
+        StringBuffer retstr = new StringBuffer("Tableau Information:\n");
+        retstr.append("Rows: " + _rows.size());
+        retstr.append(" (= " + (_rows.size() - 1) + " constraints)");
+        retstr.append("\nColumns: " + _columns.size());
+        retstr.append("\nInfeasible Rows: " + _infeasibleRows.size());
+        retstr.append("\nExternal basic variables: " + _externalRows.size());
+        retstr.append("\nExternal parametric variables: ");
+        retstr.append(_externalParametricVars.size());
+        retstr.append("\n");
+
+        return retstr.toString();
+    }
+
+    public String toString()
     {
-      if (fTraceOn) fnenterprint("removeRow:" + var);
-
-      LinearExpression expr = (LinearExpression) _rows.get(var);
-      assert(expr != null);
-
-      // For each variable in this expression, update
-      // the column mapping and remove the variable from the list
-      // of rows it is known to be in
-      for (Enumeration e = expr.terms().keys() ; e.hasMoreElements(); ) {
-        AbstractVariable clv = (AbstractVariable) e.nextElement();
-	Set varset = (Set) _columns.get(clv);
-	if (varset != null) {
-          if (fTraceOn) debugprint("removing from varset " + var);
-	  varset.remove(var);
+        StringBuffer bstr = new StringBuffer("Tableau:\n");
+        for (AbstractVariable clv: _rows.keySet()) {
+            LinearExpression expr = _rows.get(clv);
+            bstr.append(clv.toString());
+            bstr.append(" <==> ");
+            bstr.append(expr.toString());
+            bstr.append("\n");
         }
-      }
 
-      _infeasibleRows.remove(var);
+        bstr.append("\nColumns:\n");
+        bstr.append(_columns.toString());
 
-      if (var.isExternal()) {
-	_externalRows.remove(var);
-      }
-      _rows.remove(var);
-      if (fTraceOn) fnexitprint("returning " + expr);
-      return expr;
+        bstr.append("\nInfeasible rows: ");
+        bstr.append(_infeasibleRows.toString());
+
+        bstr.append("External basic variables: ");
+        bstr.append(_externalRows.toString());
+
+        bstr.append("External parametric variables: ");
+        bstr.append(_externalParametricVars.toString());
+
+        return bstr.toString();
     }
 
-  // Replace all occurrences of oldVar with expr, and update column cross indices
-  // oldVar should now be a basic variable
-  protected final void substituteOut(AbstractVariable oldVar, LinearExpression expr)
+    // Convenience function to insert a variable into
+    // the set of rows stored at _columns[param_var],
+    // creating a new set if needed
+    private final void insertColVar(AbstractVariable param_var, AbstractVariable rowvar)
     {
-      if (fTraceOn) fnenterprint("substituteOut:" + oldVar + ", " + expr);
-      if (fTraceOn) traceprint(this.toString());
-
-      Set varset = (Set) _columns.get(oldVar);
-      for (Enumeration e = varset.elements(); e.hasMoreElements(); ) {
-	AbstractVariable v = (AbstractVariable) e.nextElement();
-	LinearExpression row = (LinearExpression) _rows.get(v);
-	row.substituteOut(oldVar,expr,v,this);
-	if (v.isRestricted() && row.constant() < 0.0) {
-	  _infeasibleRows.insert(v);
-	}
-      }
-
-      if (oldVar.isExternal()) {
-	_externalRows.insert(oldVar);
-	_externalParametricVars.remove(oldVar);
-      }
-      _columns.remove(oldVar);
+        Set rowset = _columns.get(param_var);
+        if (rowset == null)
+        {
+            rowset = new HashSet<AbstractVariable>();
+            _columns.put(param_var, rowset);
+        }
+        rowset.add(rowvar);
     }
 
-  protected final Hashtable columns()
-    { return _columns; }
-
-  protected final Hashtable rows()
-    { return _rows; }
-
-  // return true iff the variable subject is in the columns keys
-  protected final boolean columnsHasKey(AbstractVariable subject)
+    // Add v=expr to the tableau, update column cross indices
+    // v becomes a basic variable
+    // expr is now owned by Tableau class,
+    // and Tableauis responsible for deleting it
+    // (also, expr better be allocated on the heap!)
+    protected final void addRow(AbstractVariable var, LinearExpression expr)
     {
-      return _columns.containsKey(subject);
+        if (fTraceOn) fnenterprint("addRow: " + var + ", " + expr);
+
+        // for each variable in expr, add var to the set of rows which
+        // have that variable in their expression
+        _rows.put(var,expr);
+
+        for (AbstractVariable clv: expr.terms().keySet())
+        {
+            insertColVar(clv,var);
+            if (clv.isExternal())
+            {
+                _externalParametricVars.add((Variable) clv);
+            }
+        }
+        if (var.isExternal())
+        {
+            _externalRows.add((Variable) var);
+        }
+        if (fTraceOn) traceprint(this.toString());
     }
 
-  protected final LinearExpression rowExpression(AbstractVariable v)
+    // Remove v from the tableau -- remove the column cross indices for v
+    // and remove v from every expression in rows in which v occurs
+    protected final void removeColumn(AbstractVariable var)
     {
-      // if (fTraceOn) fnenterprint("rowExpression:" + v);
-      return (LinearExpression) _rows.get(v);
+        if (fTraceOn) fnenterprint("removeColumn:" + var);
+        // remove the rows with the variables in varset
+        Set<AbstractVariable> rows = _columns.remove(var);
+
+        if (rows != null) {
+            for (AbstractVariable clv: rows)
+            {
+                LinearExpression expr = _rows.get(clv);
+                expr.terms().remove(var);
+            }
+        }
+        else
+        {
+            if (fTraceOn)
+            {
+                debugprint("Could not find var " + var + " in _columns");
+            }
+        }
+
+        if (var.isExternal())
+        {
+            _externalRows.remove(var);
+            _externalParametricVars.remove(var);
+        }
     }
 
-  // _columns is a mapping from variables which occur in expressions to the
-  // set of basic variables whose expressions contain them
-  // i.e., it's a mapping from variables in expressions (a column) to the
-  // set of rows that contain them
-  protected Hashtable _columns; // From AbstractVariable to Set of variables
+    // Remove the basic variable v from the tableau row v=expr
+    // Then update column cross indices
+    protected final LinearExpression removeRow(AbstractVariable var)
+           throws InternalError
+    {
+        if (fTraceOn) fnenterprint("removeRow:" + var);
 
-  // _rows maps basic variables to the expressions for that row in the tableau
-  protected Hashtable _rows;    // From AbstractVariable to LinearExpression
+        LinearExpression expr = _rows.get(var);
+        assert expr != null;
 
-  // the collection of basic variables that have infeasible rows
-  // (used when reoptimizing)
-  protected Set _infeasibleRows; // Set of AbstractVariable-s
+        // For each variable in this expression, update
+        // the column mapping and remove the variable from the list
+        // of rows it is known to be in
+        for (AbstractVariable clv: expr.terms().keySet()) {
+            Set varset = (Set) _columns.get(clv);
+            if (varset != null)
+            {
+                if (fTraceOn) {
+                    debugprint("removing from varset " + var);
+                }
+                varset.remove(var);
+            }
+        }
 
-  // the set of rows where the basic variable is external
-  // this was added to the Java/C++ versions to reduce time in setExternalVariables()
-  protected Set _externalRows; // Set of Variable-s
+        _infeasibleRows.remove(var);
 
-  // the set of external variables which are parametric
-  // this was added to the Java/C++ versions to reduce time in setExternalVariables()
-  protected Set _externalParametricVars; // Set of Variable-s
+        if (var.isExternal())
+        {
+            _externalRows.remove(var);
+        }
+        _rows.remove(var);
+        if (fTraceOn) {
+            fnexitprint("returning " + expr);
+        }
+        return expr;
+    }
 
+    // Replace all occurrences of oldVar with expr, and update column cross indices
+    // oldVar should now be a basic variable
+    protected final void substituteOut(AbstractVariable oldVar, LinearExpression expr)
+    {
+        if (fTraceOn) fnenterprint("substituteOut:" + oldVar + ", " + expr);
+        if (fTraceOn) traceprint(this.toString());
+
+        for (AbstractVariable v: _columns.get(oldVar))
+        {
+            LinearExpression row = _rows.get(v);
+            row.substituteOut(oldVar,expr,v,this);
+            if (v.isRestricted() && row.constant() < 0.0)
+            {
+                _infeasibleRows.add(v);
+            }
+        }
+
+        if (oldVar.isExternal())
+        {
+            _externalRows.add((Variable) oldVar);
+            _externalParametricVars.remove(oldVar);
+        }
+        _columns.remove(oldVar);
+    }
+
+    protected final Hashtable<AbstractVariable, Set<AbstractVariable>> columns()
+    {
+        return _columns;
+    }
+
+    protected final Hashtable<AbstractVariable, LinearExpression> rows()
+    {
+        return _rows;
+    }
+
+    // return true iff the variable subject is in the columns keys
+    protected final boolean columnsHasKey(AbstractVariable subject)
+    {
+        return _columns.containsKey(subject);
+    }
+
+    protected final LinearExpression rowExpression(AbstractVariable v)
+    {
+        // if (fTraceOn) fnenterprint("rowExpression:" + v);
+        return _rows.get(v);
+    }
 }
