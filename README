@@ -1,0 +1,19 @@
+CassowaryLayout
+===============
+
+An Android ViewGroup that uses the `Cassowary constraint-solving algorithm`_
+to perform layout of subwidgets.
+
+Cassowary is the algorithm that forms the core of the OS X and iOS visual
+layout mechanism.
+
+.. _Cassowary constraint-solving algorithm: http://www.cs.washington.edu/research/constraints/cassowary/
+
+Acknowledgements
+----------------
+
+The Cassowary implementation is a fork of the original Java library published
+by Greg J. Badros.
+
+The Cassowary code has been updated to be compliant with Java 1.4+, removes
+and simplifies certain features, and applies a consistent coding style guide.
