@@ -10,7 +10,6 @@ JAVAFILES = \
 	EditInfo.java \
 	Expression.java \
 	NonlinearExpression.java \
-	NotEnoughStays.java \
 	ObjectiveVariable.java \
 	RequiredFailure.java \
 	SimplexSolver.java \
@@ -18,7 +17,6 @@ JAVAFILES = \
 	StayConstraint.java \
 	Strength.java \
 	Tableau.java \
-	TooDifficult.java \
 	Util.java \
 	Variable.java
 
