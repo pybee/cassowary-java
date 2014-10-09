@@ -28,7 +28,7 @@ public abstract class Constraint
         _weight = 1.0;
     }
 
-    public abstract LinearExpression expression();
+    public abstract Expression expression();
 
     public boolean isEditConstraint()
     {

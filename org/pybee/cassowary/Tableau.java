@@ -14,7 +14,7 @@ class Tableau
     protected Hashtable<AbstractVariable, Set<AbstractVariable>> _columns;
 
     // _rows maps basic variables to the expressions for that row in the tableau
-    protected Hashtable<AbstractVariable, LinearExpression> _rows;
+    protected Hashtable<AbstractVariable, Expression> _rows;
 
     // the collection of basic variables that have infeasible rows
     // (used when reoptimizing)
@@ -33,7 +33,7 @@ class Tableau
     protected Tableau()
     {
         _columns = new Hashtable<AbstractVariable, Set<AbstractVariable>>();
-        _rows = new Hashtable<AbstractVariable, LinearExpression>();
+        _rows = new Hashtable<AbstractVariable, Expression>();
         _infeasibleRows = new HashSet<AbstractVariable>();
         _externalRows = new HashSet<Variable>();
         _externalParametricVars = new HashSet<Variable>();
@@ -80,7 +80,7 @@ class Tableau
     {
         StringBuffer bstr = new StringBuffer("Tableau:\n");
         for (AbstractVariable clv: _rows.keySet()) {
-            LinearExpression expr = _rows.get(clv);
+            Expression expr = _rows.get(clv);
             bstr.append(clv.toString());
             bstr.append(" <==> ");
             bstr.append(expr.toString());
@@ -121,7 +121,7 @@ class Tableau
     // expr is now owned by Tableau class,
     // and Tableauis responsible for deleting it
     // (also, expr better be allocated on the heap!)
-    protected final void addRow(AbstractVariable var, LinearExpression expr)
+    protected final void addRow(AbstractVariable var, Expression expr)
     {
         // for each variable in expr, add var to the set of rows which
         // have that variable in their expression
@@ -151,7 +151,7 @@ class Tableau
         if (rows != null) {
             for (AbstractVariable clv: rows)
             {
-                LinearExpression expr = _rows.get(clv);
+                Expression expr = _rows.get(clv);
                 expr.terms().remove(var);
             }
         }
@@ -165,10 +165,10 @@ class Tableau
 
     // Remove the basic variable v from the tableau row v=expr
     // Then update column cross indices
-    protected final LinearExpression removeRow(AbstractVariable var)
+    protected final Expression removeRow(AbstractVariable var)
            throws InternalError
     {
-        LinearExpression expr = _rows.get(var);
+        Expression expr = _rows.get(var);
         assert expr != null;
 
         // For each variable in this expression, update
@@ -194,11 +194,11 @@ class Tableau
 
     // Replace all occurrences of oldVar with expr, and update column cross indices
     // oldVar should now be a basic variable
-    protected final void substituteOut(AbstractVariable oldVar, LinearExpression expr)
+    protected final void substituteOut(AbstractVariable oldVar, Expression expr)
     {
         for (AbstractVariable v: _columns.get(oldVar))
         {
-            LinearExpression row = _rows.get(v);
+            Expression row = _rows.get(v);
             row.substituteOut(oldVar, expr, v, this);
             if (v.isRestricted() && row.constant() < 0.0)
             {
@@ -219,7 +219,7 @@ class Tableau
         return _columns;
     }
 
-    protected final Hashtable<AbstractVariable, LinearExpression> rows()
+    protected final Hashtable<AbstractVariable, Expression> rows()
     {
         return _rows;
     }
@@ -230,7 +230,7 @@ class Tableau
         return _columns.containsKey(subject);
     }
 
-    protected final LinearExpression rowExpression(AbstractVariable v)
+    protected final Expression rowExpression(AbstractVariable v)
     {
         return _rows.get(v);
     }

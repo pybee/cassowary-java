@@ -73,7 +73,7 @@ public class SimplexSolver extends Tableau
         _fOptimizeAutomatically = true;
         _fNeedsSolving = false;
 
-        LinearExpression e = new LinearExpression();
+        Expression e = new Expression();
         _rows.put(_objective, e);
         _stkCedcns = new Stack<Integer>();
         _stkCedcns.push(new Integer(0));
@@ -83,7 +83,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addLowerBound(AbstractVariable v, double lower)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v, CL.GEQ, new LinearExpression(lower));
+        LinearInequality cn = new LinearInequality(v, CL.GEQ, new Expression(lower));
         return addConstraint(cn);
     }
 
@@ -91,7 +91,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addUpperBound(AbstractVariable v, double upper)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v, CL.LEQ, new LinearExpression(upper));
+        LinearInequality cn = new LinearInequality(v, CL.LEQ, new Expression(upper));
         return addConstraint(cn);
     }
 
@@ -110,7 +110,7 @@ public class SimplexSolver extends Tableau
     {
         Vector eplus_eminus = new Vector<Double>(2);
         Double prevEConstant = new Double(0.0);
-        LinearExpression expr = newExpression(cn, eplus_eminus, prevEConstant);
+        Expression expr = newExpression(cn, eplus_eminus, prevEConstant);
         boolean fAddedOkDirectly = false;
 
         try
@@ -302,13 +302,13 @@ public class SimplexSolver extends Tableau
 
         resetStayConstants();
 
-        LinearExpression zRow = rowExpression(_objective);
+        Expression zRow = rowExpression(_objective);
 
         Set<AbstractVariable> eVars = _errorVars.get(cn);
         if (eVars != null) {
             for (AbstractVariable clv: eVars)
             {
-                final LinearExpression expr = rowExpression(clv);
+                final Expression expr = rowExpression(clv);
                 if (expr == null)
                 {
                     zRow.addVariable(clv, -cn.weight() * cn.strength().value(),
@@ -338,7 +338,7 @@ public class SimplexSolver extends Tableau
             for (AbstractVariable v: col)
             {
                 if (v.isRestricted() ) {
-                    final LinearExpression expr = rowExpression(v);
+                    final Expression expr = rowExpression(v);
                     double coeff = expr.coefficientFor(marker);
                     if (coeff < 0.0)
                     {
@@ -357,7 +357,7 @@ public class SimplexSolver extends Tableau
                 {
                     if (v.isRestricted())
                     {
-                        final LinearExpression expr = rowExpression(v);
+                        final Expression expr = rowExpression(v);
                         double coeff = expr.coefficientFor(marker);
                         double r = expr.constant() / coeff;
                         if (exitVar == null || r < minRatio)
@@ -390,7 +390,7 @@ public class SimplexSolver extends Tableau
 
         if (rowExpression(marker) != null )
         {
-            LinearExpression expr = removeRow(marker);
+            Expression expr = removeRow(marker);
             expr = null;
         }
 
@@ -658,19 +658,19 @@ public class SimplexSolver extends Tableau
   // artificial variable.  To do this, create an artificial variable
   // av and add av=expr to the inequality tableau, then make av be 0.
   // (Raise an exception if we can't attain av=0.)
-  protected final void addWithArtificialVariable(LinearExpression expr)
+  protected final void addWithArtificialVariable(Expression expr)
        throws RequiredFailure, InternalError
     {
         SlackVariable av = new SlackVariable(++_artificialCounter,"a");
         ObjectiveVariable az = new ObjectiveVariable("az");
-        LinearExpression azRow = (LinearExpression) expr.clone();
+        Expression azRow = (Expression) expr.clone();
 
         addRow(az, azRow);
         addRow(av, expr);
 
         optimize(az);
 
-        LinearExpression azTableauRow = rowExpression(az);
+        Expression azTableauRow = rowExpression(az);
 
         if (!CL.approx(azTableauRow.constant(), 0.0))
         {
@@ -680,7 +680,7 @@ public class SimplexSolver extends Tableau
         }
 
         // See if av is a basic variable
-        final LinearExpression e = rowExpression(av);
+        final Expression e = rowExpression(av);
 
         if (e != null ) {
             // find another variable in this row and pivot,
@@ -705,7 +705,7 @@ public class SimplexSolver extends Tableau
     // tableau.  Try to add expr directly to the tableax without
     // creating an artificial variable.  Return true if successful and
     // false if not.
-    protected final boolean tryAddingDirectly(LinearExpression expr)
+    protected final boolean tryAddingDirectly(Expression expr)
             throws RequiredFailure
     {
         final AbstractVariable subject = chooseSubject(expr);
@@ -740,7 +740,7 @@ public class SimplexSolver extends Tableau
     // ignore whether a variable occurs in the objective function, since
     // new slack variables are added to the objective function by
     // 'newExpression:', which is called before this method.
-    protected final AbstractVariable chooseSubject(LinearExpression expr)
+    protected final AbstractVariable chooseSubject(Expression expr)
             throws RequiredFailure
     {
         AbstractVariable subject = null; // the current best subject, if any
@@ -838,7 +838,7 @@ public class SimplexSolver extends Tableau
     // to resolveing. --02/16/99 gjb)
     protected final void deltaEditConstant(double delta, AbstractVariable plusErrorVar, AbstractVariable minusErrorVar)
     {
-        LinearExpression exprPlus = rowExpression(plusErrorVar);
+        Expression exprPlus = rowExpression(plusErrorVar);
         if (exprPlus != null )
         {
             exprPlus.incrementConstant(delta);
@@ -850,7 +850,7 @@ public class SimplexSolver extends Tableau
             return;
         }
 
-        LinearExpression exprMinus = rowExpression(minusErrorVar);
+        Expression exprMinus = rowExpression(minusErrorVar);
         if (exprMinus != null)
         {
             exprMinus.incrementConstant(-delta);
@@ -863,7 +863,7 @@ public class SimplexSolver extends Tableau
 
         for (AbstractVariable basicVar: _columns.get(minusErrorVar))
         {
-            LinearExpression expr = rowExpression(basicVar);
+            Expression expr = rowExpression(basicVar);
             //assert(expr != null, "expr != null" );
             final double c = expr.coefficientFor(minusErrorVar);
             expr.incrementConstant(c * delta);
@@ -879,14 +879,14 @@ public class SimplexSolver extends Tableau
     protected final void dualOptimize()
             throws InternalError
     {
-        final LinearExpression zRow = rowExpression(_objective);
+        final Expression zRow = rowExpression(_objective);
         Iterator<AbstractVariable> elements = _infeasibleRows.iterator();
         while (elements.hasNext())
         {
             AbstractVariable exitVar = elements.next();
             _infeasibleRows.remove(exitVar);
             AbstractVariable entryVar = null;
-            LinearExpression expr = rowExpression(exitVar);
+            Expression expr = rowExpression(exitVar);
             if (expr != null )
             {
                 if (expr.constant() < 0.0)
@@ -923,10 +923,10 @@ public class SimplexSolver extends Tableau
     // Normalize if necessary so that the constant is non-negative.  If
     // the constraint is non-required give its error variables an
     // appropriate weight in the objective function.
-    protected final LinearExpression newExpression(Constraint cn, Vector eplus_eminus, Double prevEConstant)
+    protected final Expression newExpression(Constraint cn, Vector eplus_eminus, Double prevEConstant)
     {
-        final LinearExpression cnExpr = cn.expression();
-        LinearExpression expr = new LinearExpression(cnExpr.constant());
+        final Expression cnExpr = cn.expression();
+        Expression expr = new Expression(cnExpr.constant());
         SlackVariable slackVar = new SlackVariable();
         DummyVariable dummyVar = new DummyVariable();
         SlackVariable eminus = new SlackVariable();
@@ -935,7 +935,7 @@ public class SimplexSolver extends Tableau
         for (AbstractVariable v: cnTerms.keySet())
         {
             double c = cnTerms.get(v).doubleValue();
-            final LinearExpression e = rowExpression(v);
+            final Expression e = rowExpression(v);
             if (e == null)
             {
                 expr.addVariable(v, c);
@@ -957,7 +957,7 @@ public class SimplexSolver extends Tableau
                 ++_slackCounter;
                 eminus = new SlackVariable(_slackCounter, "em");
                 expr.setVariable(eminus, 1.0);
-                LinearExpression zRow = rowExpression(_objective);
+                Expression zRow = rowExpression(_objective);
                 double swCoeff = cn.strength().value() * cn.weight();
                 zRow.setVariable(eminus, swCoeff);
                 insertErrorVar(cn, eminus);
@@ -983,7 +983,7 @@ public class SimplexSolver extends Tableau
                 expr.setVariable(eplus, -1.0);
                 expr.setVariable(eminus, 1.0);
                 _markerVars.put(cn, eplus);
-                LinearExpression zRow = rowExpression(_objective);
+                Expression zRow = rowExpression(_objective);
                 double swCoeff = cn.strength().value() * cn.weight();
                 zRow.setVariable(eplus, swCoeff);
                 noteAddedVariable(eplus, _objective);
@@ -1022,7 +1022,7 @@ public class SimplexSolver extends Tableau
     protected final void optimize(ObjectiveVariable zVar)
             throws InternalError
     {
-        LinearExpression zRow = rowExpression(zVar);
+        Expression zRow = rowExpression(zVar);
         assert zRow != null;
         AbstractVariable entryVar = null;
         AbstractVariable exitVar = null;
@@ -1049,7 +1049,7 @@ public class SimplexSolver extends Tableau
             for (AbstractVariable v: columnVars) {
                 if (v.isPivotable())
                 {
-                    final LinearExpression expr = rowExpression(v);
+                    final Expression expr = rowExpression(v);
                     double coeff = expr.coefficientFor(entryVar);
                     if (coeff < 0.0)
                     {
@@ -1079,7 +1079,7 @@ public class SimplexSolver extends Tableau
         // otherwise it should be a pivotable variable -- enforced at call sites,
         // hopefully
 
-        LinearExpression pexpr = removeRow(exitVar);
+        Expression pexpr = removeRow(exitVar);
 
         pexpr.changeSubject(exitVar, entryVar);
         substituteOut(entryVar, pexpr);
@@ -1102,7 +1102,7 @@ public class SimplexSolver extends Tableau
     protected final void resetStayConstants()
     {
         for (int i = 0; i < _stayPlusErrorVars.size(); i++) {
-            LinearExpression expr = rowExpression(_stayPlusErrorVars.get(i) );
+            Expression expr = rowExpression(_stayPlusErrorVars.get(i) );
             if (expr == null)
             {
                 expr = rowExpression(_stayMinusErrorVars.get(i));
@@ -1139,7 +1139,7 @@ public class SimplexSolver extends Tableau
         for (AbstractVariable av: _externalRows)
         {
             Variable v = (Variable) av;
-            LinearExpression expr = rowExpression(v);
+            Expression expr = rowExpression(v);
             v.change_value(expr.constant());
         }
 

@@ -122,20 +122,20 @@ public class Variable extends AbstractVariable
         return _ourVarMap;
     }
 
-    public LinearExpression times(double val)
+    public Expression times(double val)
     {
-        return new LinearExpression(this, val);
+        return new Expression(this, val);
     }
 
-    public LinearExpression times(LinearExpression var)
+    public Expression times(Expression var)
             throws NonlinearExpression
     {
-        return var.times(new LinearExpression(this));
+        return var.times(new Expression(this));
     }
 
-    public LinearExpression plus(double val)
+    public Expression plus(double val)
     {
-        return new LinearExpression(this).plus(new LinearExpression(val));
+        return new Expression(this).plus(new Expression(val));
     }
 
 }

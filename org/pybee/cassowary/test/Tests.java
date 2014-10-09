@@ -19,7 +19,7 @@ public class Tests extends CL {
         Variable y = new Variable(2);
         SimplexSolver solver = new SimplexSolver();
 
-        LinearEquation eq = new LinearEquation(x, new LinearExpression(y));
+        LinearEquation eq = new LinearEquation(x, new Expression(y));
         solver.addConstraint(eq);
         fOkResult = (x.value() == y.value());
 
@@ -314,7 +314,7 @@ public class Tests extends CL {
         {
             // number of variables in this constraint
             nvs = RandomInRange(1,maxVars);
-            LinearExpression expr = new LinearExpression(UniformRandomDiscretized() * 20.0 - 10.0);
+            Expression expr = new Expression(UniformRandomDiscretized() * 20.0 - 10.0);
             for (k = 0; k < nvs; k++) {
                 coeff = UniformRandomDiscretized()*10 - 5;
                 int iclv = (int) (UniformRandomDiscretized()*nVars);

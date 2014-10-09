@@ -3,32 +3,32 @@ package org.pybee.cassowary;
 
 class LinearConstraint extends Constraint
 {
-    protected LinearExpression _expression;
+    protected Expression _expression;
 
-    public LinearConstraint(LinearExpression cle, Strength strength, double weight)
+    public LinearConstraint(Expression cle, Strength strength, double weight)
     {
         super(strength, weight);
         _expression = cle;
     }
 
-    public LinearConstraint(LinearExpression cle, Strength strength)
+    public LinearConstraint(Expression cle, Strength strength)
     {
         super(strength, 1.0);
         _expression = cle;
     }
 
-    public LinearConstraint(LinearExpression cle)
+    public LinearConstraint(Expression cle)
     {
         super(Strength.REQUIRED, 1.0);
         _expression = cle;
     }
 
-    public LinearExpression expression()
+    public Expression expression()
     {
         return _expression;
     }
 
-    protected void setExpression(LinearExpression expr)
+    protected void setExpression(Expression expr)
     {
         _expression = expr;
     }

@@ -6,13 +6,13 @@ abstract class EditOrStayConstraint extends Constraint
   protected Variable  _variable;
 
   // cache the expresion
-  private LinearExpression _expression;
+  private Expression _expression;
 
   public EditOrStayConstraint(Variable var, Strength strength, double weight)
   {
       super(strength, weight);
       _variable = var;
-      _expression = new LinearExpression(_variable, -1.0, _variable.value());
+      _expression = new Expression(_variable, -1.0, _variable.value());
   }
 
   public EditOrStayConstraint(Variable var, Strength strength)
@@ -31,7 +31,7 @@ abstract class EditOrStayConstraint extends Constraint
       return _variable;
   }
 
-  public LinearExpression expression()
+  public Expression expression()
   {
       return _expression;
   }

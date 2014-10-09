@@ -4,12 +4,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 
-public class LinearExpression
+public class Expression
 {
     private double _constant;
     private Hashtable<AbstractVariable, Double> _terms;
 
-    public LinearExpression(AbstractVariable clv, double value, double constant)
+    public Expression(AbstractVariable clv, double value, double constant)
     {
         _constant = constant;
         _terms = new Hashtable<AbstractVariable, Double>();
@@ -19,28 +19,28 @@ public class LinearExpression
         }
     }
 
-    public LinearExpression(double num)
+    public Expression(double num)
     {
         this(null, 0.0, num);
     }
 
-    public LinearExpression()
+    public Expression()
     {
         this(0.0);
     }
 
-    public LinearExpression(AbstractVariable clv, double value)
+    public Expression(AbstractVariable clv, double value)
     {
         this(clv, value, 0.0);
     }
 
-    public LinearExpression(AbstractVariable clv)
+    public Expression(AbstractVariable clv)
     {
         this(clv, 1.0, 0.0);
     }
 
     // for use by the clone method
-    protected LinearExpression(double constant, Hashtable<AbstractVariable, Double> terms)
+    protected Expression(double constant, Hashtable<AbstractVariable, Double> terms)
     {
         _constant = constant;
         _terms = new Hashtable<AbstractVariable, Double>();
@@ -51,7 +51,7 @@ public class LinearExpression
         }
     }
 
-    public LinearExpression multiplyMe(double x)
+    public Expression multiplyMe(double x)
     {
         _constant = _constant * x;
 
@@ -64,15 +64,15 @@ public class LinearExpression
 
     public final Object clone()
     {
-        return new LinearExpression(_constant, _terms);
+        return new Expression(_constant, _terms);
     }
 
-    public final LinearExpression times(double x)
+    public final Expression times(double x)
     {
-      return ((LinearExpression) clone()).multiplyMe(x);
+      return ((Expression) clone()).multiplyMe(x);
     }
 
-    public final LinearExpression times(LinearExpression expr)
+    public final Expression times(Expression expr)
             throws NonlinearExpression
     {
         if (isConstant())
@@ -86,29 +86,29 @@ public class LinearExpression
         return times(expr._constant);
     }
 
-    public final LinearExpression plus(LinearExpression expr)
+    public final Expression plus(Expression expr)
     {
-        return ((LinearExpression) clone()).addExpression(expr, 1.0);
+        return ((Expression) clone()).addExpression(expr, 1.0);
     }
 
-    public final LinearExpression plus(Variable var)
+    public final Expression plus(Variable var)
         throws NonlinearExpression
     {
-        return ((LinearExpression) clone()).addVariable(var, 1.0);
+        return ((Expression) clone()).addVariable(var, 1.0);
     }
 
-    public final LinearExpression minus(LinearExpression expr)
+    public final Expression minus(Expression expr)
     {
-        return ((LinearExpression) clone()).addExpression(expr, -1.0);
+        return ((Expression) clone()).addExpression(expr, -1.0);
     }
 
-    public final LinearExpression minus(Variable var)
+    public final Expression minus(Variable var)
             throws NonlinearExpression
     {
-        return ((LinearExpression) clone()).addVariable(var, -1.0);
+        return ((Expression) clone()).addVariable(var, -1.0);
     }
 
-    public final LinearExpression divide(double x)
+    public final Expression divide(double x)
             throws NonlinearExpression
     {
         if (CL.approx(x, 0.0))
@@ -118,7 +118,7 @@ public class LinearExpression
         return times(1.0 / x);
     }
 
-    public final LinearExpression divide(LinearExpression expr)
+    public final Expression divide(Expression expr)
             throws NonlinearExpression
     {
         if (!expr.isConstant())
@@ -128,7 +128,7 @@ public class LinearExpression
         return divide(expr._constant);
     }
 
-    public final LinearExpression divFrom(LinearExpression expr)
+    public final Expression divFrom(Expression expr)
             throws NonlinearExpression
     {
         if (!isConstant() || CL.approx(_constant, 0.0))
@@ -138,7 +138,7 @@ public class LinearExpression
         return expr.divide(_constant);
     }
 
-    public final LinearExpression subtractFrom(LinearExpression expr)
+    public final Expression subtractFrom(Expression expr)
     {
         return expr.minus(this);
     }
@@ -146,7 +146,7 @@ public class LinearExpression
     // Add n*expr to this expression from another expression expr.
     // Notify the solver if a variable is added or deleted from this
     // expression.
-    public final LinearExpression addExpression(LinearExpression expr, double n, AbstractVariable subject, Tableau solver)
+    public final Expression addExpression(Expression expr, double n, AbstractVariable subject, Tableau solver)
     {
         incrementConstant(n * expr.constant());
 
@@ -159,7 +159,7 @@ public class LinearExpression
     }
 
     // Add n*expr to this expression from another expression expr.
-    public final LinearExpression addExpression(LinearExpression expr, double n)
+    public final Expression addExpression(Expression expr, double n)
     {
         incrementConstant(n * expr.constant());
 
@@ -171,7 +171,7 @@ public class LinearExpression
         return this;
     }
 
-    public final LinearExpression addExpression(LinearExpression expr)
+    public final Expression addExpression(Expression expr)
     {
       return addExpression(expr, 1.0);
     }
@@ -179,7 +179,7 @@ public class LinearExpression
     // Add a term c*v to this expression.  If the expression already
     // contains a term involving v, add c to the existing coefficient.
     // If the new coefficient is approximately 0, delete v.
-    public final LinearExpression addVariable(AbstractVariable v, double c)
+    public final Expression addVariable(AbstractVariable v, double c)
     {
         // body largely duplicated below
         Double coeff = _terms.get(v);
@@ -205,13 +205,13 @@ public class LinearExpression
         return this;
     }
 
-    public final LinearExpression addVariable(AbstractVariable v)
+    public final Expression addVariable(AbstractVariable v)
     {
         return addVariable(v, 1.0);
     }
 
 
-    public final LinearExpression setVariable(AbstractVariable v, double c)
+    public final Expression setVariable(AbstractVariable v, double c)
     {
         _terms.put(v, new Double(c));
         return this;
@@ -221,7 +221,7 @@ public class LinearExpression
     // contains a term involving v, add c to the existing coefficient.
     // If the new coefficient is approximately 0, delete v.  Notify the
     // solver if v appears or disappears from this expression.
-    public final LinearExpression addVariable(AbstractVariable v, double c, AbstractVariable subject, Tableau solver)
+    public final Expression addVariable(AbstractVariable v, double c, AbstractVariable subject, Tableau solver)
     {
         // body largely duplicated above
         Double coeff = _terms.get(v);
@@ -278,7 +278,7 @@ public class LinearExpression
     // because it now has a coefficient of 0, inform the solver.
     // PRECONDITIONS:
     //   var occurs with a non-zero coefficient in this expression.
-    public final void substituteOut(AbstractVariable var, LinearExpression expr, AbstractVariable subject, Tableau solver)
+    public final void substituteOut(AbstractVariable var, Expression expr, AbstractVariable subject, Tableau solver)
     {
         double multiplier = ((Double) _terms.remove(var)).doubleValue();
         incrementConstant(multiplier * expr.constant());
@@ -423,29 +423,29 @@ public class LinearExpression
         return bstr.toString();
     }
 
-    public final static LinearExpression plus(LinearExpression e1, LinearExpression e2)
+    public final static Expression plus(Expression e1, Expression e2)
     {
         return e1.plus(e2);
     }
 
-    public final static LinearExpression minus(LinearExpression e1, LinearExpression e2)
+    public final static Expression minus(Expression e1, Expression e2)
     {
         return e1.minus(e2);
     }
 
-    public final static LinearExpression times(LinearExpression e1, LinearExpression e2)
+    public final static Expression times(Expression e1, Expression e2)
             throws NonlinearExpression
     {
         return e1.times(e2);
     }
 
-    public final static LinearExpression divide(LinearExpression e1, LinearExpression e2)
+    public final static Expression divide(Expression e1, Expression e2)
             throws NonlinearExpression
     {
         return e1.divide(e2);
     }
 
-    public final static boolean fequals(LinearExpression e1, LinearExpression e2)
+    public final static boolean fequals(Expression e1, Expression e2)
     {
         return e1 == e2;
     }

@@ -4,17 +4,17 @@ package org.pybee.cassowary;
 public class LinearInequality extends LinearConstraint
 {
 
-    public LinearInequality(LinearExpression cle, Strength strength, double weight)
+    public LinearInequality(Expression cle, Strength strength, double weight)
     {
         super(cle, strength, weight);
     }
 
-    public LinearInequality(LinearExpression cle, Strength strength)
+    public LinearInequality(Expression cle, Strength strength)
     {
         super(cle, strength);
     }
 
-    public LinearInequality(LinearExpression cle)
+    public LinearInequality(Expression cle)
     {
         super(cle);
     }
@@ -22,7 +22,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv1, byte op_enum, Variable clv2, Strength strength, double weight)
             throws InternalError
     {
-        super(new LinearExpression(clv2), strength, weight);
+        super(new Expression(clv2), strength, weight);
 
         if (op_enum == CL.GEQ)
         {
@@ -56,7 +56,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv, byte op_enum, double val, Strength strength, double weight)
             throws InternalError
     {
-        super(new LinearExpression(val), strength, weight);
+        super(new Expression(val), strength, weight);
         if (op_enum == CL.GEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -85,10 +85,10 @@ public class LinearInequality extends LinearConstraint
         this(clv, op_enum, val, Strength.REQUIRED, 1.0);
     }
 
-    public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2, Strength strength, double weight)
+    public LinearInequality(Expression cle1, byte op_enum, Expression cle2, Strength strength, double weight)
             throws InternalError
     {
-        super(((LinearExpression) cle2.clone()), strength, weight);
+        super(((Expression) cle2.clone()), strength, weight);
         if (op_enum == CL.GEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -105,22 +105,22 @@ public class LinearInequality extends LinearConstraint
         }
     }
 
-    public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2, Strength strength)
+    public LinearInequality(Expression cle1, byte op_enum, Expression cle2, Strength strength)
             throws InternalError
     {
         this(cle1, op_enum, cle2, strength, 1.0);
     }
 
-    public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2)
+    public LinearInequality(Expression cle1, byte op_enum, Expression cle2)
             throws InternalError
     {
         this(cle1, op_enum, cle2, Strength.REQUIRED, 1.0);
     }
 
-    public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle, Strength strength, double weight)
+    public LinearInequality(AbstractVariable clv, byte op_enum, Expression cle, Strength strength, double weight)
         throws InternalError
     {
-        super(((LinearExpression) cle.clone()), strength, weight);
+        super(((Expression) cle.clone()), strength, weight);
         if (op_enum == CL.GEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -137,22 +137,22 @@ public class LinearInequality extends LinearConstraint
         }
     }
 
-    public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle, Strength strength)
+    public LinearInequality(AbstractVariable clv, byte op_enum, Expression cle, Strength strength)
             throws InternalError
     {
         this(clv, op_enum, cle, strength, 1.0);
     }
 
-    public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle)
+    public LinearInequality(AbstractVariable clv, byte op_enum, Expression cle)
         throws InternalError
     {
         this(clv, op_enum, cle, Strength.REQUIRED, 1.0);
     }
 
-    public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv, Strength strength, double weight)
+    public LinearInequality(Expression cle, byte op_enum, AbstractVariable clv, Strength strength, double weight)
             throws InternalError
     {
-        super(((LinearExpression) cle.clone()), strength, weight);
+        super(((Expression) cle.clone()), strength, weight);
         if (op_enum == CL.LEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -169,13 +169,13 @@ public class LinearInequality extends LinearConstraint
         }
     }
 
-    public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv, Strength strength)
+    public LinearInequality(Expression cle, byte op_enum, AbstractVariable clv, Strength strength)
         throws InternalError
     {
         this(cle, op_enum, clv, strength, 1.0);
     }
 
-    public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv)
+    public LinearInequality(Expression cle, byte op_enum, AbstractVariable clv)
             throws InternalError
     {
         this(cle, op_enum, clv, Strength.REQUIRED, 1.0);
