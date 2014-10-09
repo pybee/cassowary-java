@@ -1,7 +1,7 @@
 package org.pybee.cassowary;
 
 
-class LinearConstraint extends Constraint
+class LinearConstraint extends AbstractConstraint
 {
     protected Expression _expression;
 

@@ -1,7 +1,7 @@
 package org.pybee.cassowary;
 
 
-abstract class EditOrStayConstraint extends Constraint
+abstract class EditOrStayConstraint extends AbstractConstraint
 {
   protected Variable  _variable;
 

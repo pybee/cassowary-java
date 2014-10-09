@@ -305,7 +305,7 @@ public class Tests extends CL {
             solver.addStay(rgpclv[i]);
         }
 
-        Constraint[] rgpcns = new Constraint[nCns];
+        AbstractConstraint[] rgpcns = new AbstractConstraint[nCns];
         int nvs = 0;
         int k;
         int j;

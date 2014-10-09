@@ -3,26 +3,26 @@ package org.pybee.cassowary;
 import java.lang.*;
 
 
-public abstract class Constraint
+public abstract class AbstractConstraint
 {
     private Strength _strength;
     private double _weight;
 
     private Object _attachedObject;
 
-    public Constraint(Strength strength, double weight)
+    public AbstractConstraint(Strength strength, double weight)
     {
         _strength = strength;
         _weight = weight;
     }
 
-    public Constraint(Strength strength)
+    public AbstractConstraint(Strength strength)
     {
         _strength = strength;
         _weight = 1.0;
     }
 
-    public Constraint()
+    public AbstractConstraint()
     {
         _strength = Strength.REQUIRED;
         _weight = 1.0;

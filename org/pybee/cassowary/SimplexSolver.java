@@ -20,11 +20,11 @@ public class SimplexSolver extends Tableau
 
     // give error variables for a non required constraint,
     // maps to SlackVariable-s
-    private Hashtable<Constraint, Set<AbstractVariable>> _errorVars;
+    private Hashtable<AbstractConstraint, Set<AbstractVariable>> _errorVars;
 
     // Return a lookup table giving the marker variable for each
     // constraint (used when deleting a constraint).
-    private Hashtable<Constraint, AbstractVariable> _markerVars; // map Constraint to Variable
+    private Hashtable<AbstractConstraint, AbstractVariable> _markerVars;
 
     private ObjectiveVariable _objective;
 
@@ -54,8 +54,8 @@ public class SimplexSolver extends Tableau
     {
         _stayMinusErrorVars = new Vector<SlackVariable>();
         _stayPlusErrorVars = new Vector<SlackVariable>();
-        _errorVars = new Hashtable<Constraint, Set<AbstractVariable>>();
-        _markerVars = new Hashtable<Constraint, AbstractVariable>();
+        _errorVars = new Hashtable<AbstractConstraint, Set<AbstractVariable>>();
+        _markerVars = new Hashtable<AbstractConstraint, AbstractVariable>();
 
         _resolve_pair = new Vector<Double>(2);
         _resolve_pair.addElement(new Double(0.0));
@@ -105,7 +105,7 @@ public class SimplexSolver extends Tableau
     }
 
     // Add constraint "cn" to the solver
-    public final SimplexSolver addConstraint(Constraint cn)
+    public final SimplexSolver addConstraint(AbstractConstraint cn)
             throws RequiredFailure, InternalError
     {
         Vector eplus_eminus = new Vector<Double>(2);
@@ -158,7 +158,7 @@ public class SimplexSolver extends Tableau
 
     // Same as addConstraint, except returns false if the constraint
     // resulted in an unsolvable system (instead of throwing an exception)
-    public final boolean addConstraintNoException(Constraint cn)
+    public final boolean addConstraintNoException(AbstractConstraint cn)
             throws InternalError
     {
         try
@@ -200,7 +200,7 @@ public class SimplexSolver extends Tableau
             throws InternalError, ConstraintNotFound
     {
         EditInfo cei = _editVarMap.get(v);
-        Constraint cn = cei.Constraint();
+        AbstractConstraint cn = cei.Constraint();
         removeConstraint(cn);
         return this;
     }
@@ -295,7 +295,7 @@ public class SimplexSolver extends Tableau
 
     // Remove the constraint cn from the tableau
     // Also remove any error variable associated with cn
-    public final SimplexSolver removeConstraint(Constraint cn)
+    public final SimplexSolver removeConstraint(AbstractConstraint cn)
             throws ConstraintNotFound, InternalError
     {
         _fNeedsSolving = true;
@@ -647,7 +647,7 @@ public class SimplexSolver extends Tableau
         return bstr.toString();
     }
 
-    public Hashtable<Constraint, AbstractVariable> getConstraintMap()
+    public Hashtable<AbstractConstraint, AbstractVariable> getConstraintMap()
     {
         return _markerVars;
     }
@@ -923,7 +923,7 @@ public class SimplexSolver extends Tableau
     // Normalize if necessary so that the constant is non-negative.  If
     // the constraint is non-required give its error variables an
     // appropriate weight in the objective function.
-    protected final Expression newExpression(Constraint cn, Vector eplus_eminus, Double prevEConstant)
+    protected final Expression newExpression(AbstractConstraint cn, Vector eplus_eminus, Double prevEConstant)
     {
         final Expression cnExpr = cn.expression();
         Expression expr = new Expression(cnExpr.constant());
@@ -1148,7 +1148,7 @@ public class SimplexSolver extends Tableau
 
     // Protected convenience function to insert an error variable into
     // the _errorVars set, creating the mapping with put as necessary
-    protected final void insertErrorVar(Constraint cn, AbstractVariable var)
+    protected final void insertErrorVar(AbstractConstraint cn, AbstractVariable var)
     {
         Set cnset = (Set) _errorVars.get(var);
         if (cnset == null)
