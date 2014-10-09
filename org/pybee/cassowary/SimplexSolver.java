@@ -83,7 +83,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addLowerBound(AbstractVariable v, double lower)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v, CL.GEQ, new Expression(lower));
+        Constraint cn = new Constraint(v, CL.GEQ, new Expression(lower));
         return addConstraint(cn);
     }
 
@@ -91,7 +91,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addUpperBound(AbstractVariable v, double upper)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v, CL.LEQ, new Expression(upper));
+        Constraint cn = new Constraint(v, CL.LEQ, new Expression(upper));
         return addConstraint(cn);
     }
 

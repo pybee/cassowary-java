@@ -62,7 +62,7 @@ public class Expression
         return this;
     }
 
-    public final Object clone()
+    public final Expression clone()
     {
         return new Expression(_constant, _terms);
     }

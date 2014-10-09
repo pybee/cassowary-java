@@ -2,8 +2,9 @@ package org.pybee.cassowary;
 
 
 public class CL {
+    public static final byte LEQ = -1;
+    public static final byte EQ = 0;
     public static final byte GEQ = 1;
-    public static final byte LEQ = 2;
 
     public static boolean approx(double a, double b)
     {

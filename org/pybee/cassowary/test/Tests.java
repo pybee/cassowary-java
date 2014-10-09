@@ -6,6 +6,8 @@ import org.pybee.cassowary.*;
 
 
 public class Tests extends CL {
+    static private Random RND;
+
     public Tests()
     {
         RND = new Random(123456789);
@@ -19,7 +21,7 @@ public class Tests extends CL {
         Variable y = new Variable(2);
         SimplexSolver solver = new SimplexSolver();
 
-        LinearEquation eq = new LinearEquation(x, new Expression(y));
+        Constraint eq = new Constraint(x, CL.EQ, new Expression(y));
         solver.addConstraint(eq);
         fOkResult = (x.value() == y.value());
 
@@ -52,10 +54,10 @@ public class Tests extends CL {
         Variable x = new Variable("x");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new LinearEquation(x, 100, Strength.WEAK));
+        solver.addConstraint(new Constraint(x, CL.EQ, 100, Strength.WEAK));
 
-        LinearInequality c10 = new LinearInequality(x, CL.LEQ, 10.0);
-        LinearInequality c20 = new LinearInequality(x, CL.LEQ, 20.0);
+        Constraint c10 = new Constraint(x, CL.LEQ, 10.0);
+        Constraint c20 = new Constraint(x, CL.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
@@ -71,7 +73,7 @@ public class Tests extends CL {
         fOkResult = fOkResult && CL.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
-        LinearInequality c10again = new LinearInequality(x, CL.LEQ, 10.0);
+        Constraint c10again = new Constraint(x, CL.LEQ, 10.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c10again);
@@ -98,11 +100,11 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new LinearEquation(x, 100.0, Strength.WEAK));
-        solver.addConstraint(new LinearEquation(y, 120.0, Strength.STRONG));
+        solver.addConstraint(new Constraint(x, CL.EQ, 100.0, Strength.WEAK));
+        solver.addConstraint(new Constraint(y, CL.EQ, 120.0, Strength.STRONG));
 
-        LinearInequality c10 = new LinearInequality(x, CL.LEQ, 10.0);
-        LinearInequality c20 = new LinearInequality(x, CL.LEQ, 20.0);
+        Constraint c10 = new Constraint(x, CL.LEQ, 10.0);
+        Constraint c20 = new Constraint(x, CL.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
@@ -114,7 +116,7 @@ public class Tests extends CL {
         fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
-        LinearEquation cxy = new LinearEquation(x.times(2.0), y);
+        Constraint cxy = new Constraint(x.times(2.0), CL.EQ, y);
         solver.addConstraint(cxy);
         fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 40.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
@@ -138,11 +140,10 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new LinearInequality(x, CL.LEQ,y));
-        solver.addConstraint(new LinearEquation(y, x.plus(3.0)));
-        solver.addConstraint(new LinearEquation(x, 10.0, Strength.WEAK));
-        solver.addConstraint(new LinearEquation(y, 10.0, Strength.WEAK));
-
+        solver.addConstraint(new Constraint(x, CL.LEQ,y));
+        solver.addConstraint(new Constraint(y, CL.EQ, x.plus(3.0)));
+        solver.addConstraint(new Constraint(x, CL.EQ, 10.0, Strength.WEAK));
+        solver.addConstraint(new Constraint(y, CL.EQ, 10.0, Strength.WEAK));
         fOkResult = fOkResult && ( CL.approx(x, 10.0) && CL.approx(y, 13.0) || CL.approx(x, 7.0) && CL.approx(y, 10.0) );
 
         System.out.println("x == " + x.value() + ", y == " + y.value());
@@ -157,8 +158,8 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearEquation(x, 10.0));
-            solver.addConstraint(new LinearEquation(x, 5.0));
+            solver.addConstraint(new Constraint(x, CL.EQ, 10.0));
+            solver.addConstraint(new Constraint(x, CL.EQ, 5.0));
 
             // no exception, we failed!
             return(false);
@@ -179,8 +180,8 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearInequality(x, CL.GEQ, 10.0));
-            solver.addConstraint(new LinearInequality(x, CL.LEQ, 5.0));
+            solver.addConstraint(new Constraint(x, CL.GEQ, 10.0));
+            solver.addConstraint(new Constraint(x, CL.LEQ, 5.0));
 
             // no exception, we failed!
             return(false);
@@ -266,12 +267,12 @@ public class Tests extends CL {
             Variable z = new Variable("z");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearInequality(w, CL.GEQ, 10.0));
-            solver.addConstraint(new LinearInequality(x, CL.GEQ, w));
-            solver.addConstraint(new LinearInequality(y, CL.GEQ, x));
-            solver.addConstraint(new LinearInequality(z, CL.GEQ, y));
-            solver.addConstraint(new LinearInequality(z, CL.GEQ, 8.0));
-            solver.addConstraint(new LinearInequality(z, CL.LEQ, 4.0));
+            solver.addConstraint(new Constraint(w, CL.GEQ, 10.0));
+            solver.addConstraint(new Constraint(x, CL.GEQ, w));
+            solver.addConstraint(new Constraint(y, CL.GEQ, x));
+            solver.addConstraint(new Constraint(z, CL.GEQ, y));
+            solver.addConstraint(new Constraint(z, CL.GEQ, 8.0));
+            solver.addConstraint(new Constraint(z, CL.LEQ, 4.0));
 
             // no exception, we failed!
             return(false);
@@ -320,11 +321,7 @@ public class Tests extends CL {
                 int iclv = (int) (UniformRandomDiscretized()*nVars);
                 expr.addExpression(rgpclv[iclv].times(coeff));
             }
-            if (UniformRandomDiscretized() < ineqProb) {
-                rgpcns[j] = new LinearInequality(expr);
-            } else {
-                rgpcns[j] = new LinearEquation(expr);
-            }
+            rgpcns[j] = new Constraint(expr);
         }
 
         System.out.println("done building data structures");
@@ -488,6 +485,4 @@ public class Tests extends CL {
         System.out.println("Num vars = " + AbstractVariable.numCreated());
 
     }
-
-    static private Random RND;
 }
