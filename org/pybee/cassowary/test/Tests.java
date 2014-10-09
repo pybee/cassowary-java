@@ -21,7 +21,7 @@ public class Tests extends CL {
         Variable y = new Variable(2);
         SimplexSolver solver = new SimplexSolver();
 
-        Constraint eq = new Constraint(x, CL.EQ, new Expression(y));
+        Constraint eq = new Constraint(x, Constraint.Operator.EQ, new Expression(y));
         solver.addConstraint(eq);
         fOkResult = (x.value() == y.value());
 
@@ -54,10 +54,10 @@ public class Tests extends CL {
         Variable x = new Variable("x");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new Constraint(x, CL.EQ, 100, Strength.WEAK));
+        solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 100, Strength.WEAK));
 
-        Constraint c10 = new Constraint(x, CL.LEQ, 10.0);
-        Constraint c20 = new Constraint(x, CL.LEQ, 20.0);
+        Constraint c10 = new Constraint(x, Constraint.Operator.LEQ, 10.0);
+        Constraint c20 = new Constraint(x, Constraint.Operator.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
@@ -73,7 +73,7 @@ public class Tests extends CL {
         fOkResult = fOkResult && CL.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
-        Constraint c10again = new Constraint(x, CL.LEQ, 10.0);
+        Constraint c10again = new Constraint(x, Constraint.Operator.LEQ, 10.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c10again);
@@ -100,11 +100,11 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new Constraint(x, CL.EQ, 100.0, Strength.WEAK));
-        solver.addConstraint(new Constraint(y, CL.EQ, 120.0, Strength.STRONG));
+        solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 100.0, Strength.WEAK));
+        solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, 120.0, Strength.STRONG));
 
-        Constraint c10 = new Constraint(x, CL.LEQ, 10.0);
-        Constraint c20 = new Constraint(x, CL.LEQ, 20.0);
+        Constraint c10 = new Constraint(x, Constraint.Operator.LEQ, 10.0);
+        Constraint c20 = new Constraint(x, Constraint.Operator.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
@@ -116,7 +116,7 @@ public class Tests extends CL {
         fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
-        Constraint cxy = new Constraint(x.times(2.0), CL.EQ, y);
+        Constraint cxy = new Constraint(x.times(2.0), Constraint.Operator.EQ, y);
         solver.addConstraint(cxy);
         fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 40.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
@@ -140,10 +140,10 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new Constraint(x, CL.LEQ,y));
-        solver.addConstraint(new Constraint(y, CL.EQ, x.plus(3.0)));
-        solver.addConstraint(new Constraint(x, CL.EQ, 10.0, Strength.WEAK));
-        solver.addConstraint(new Constraint(y, CL.EQ, 10.0, Strength.WEAK));
+        solver.addConstraint(new Constraint(x, Constraint.Operator.LEQ,y));
+        solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, x.plus(3.0)));
+        solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 10.0, Strength.WEAK));
+        solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, 10.0, Strength.WEAK));
         fOkResult = fOkResult && ( CL.approx(x, 10.0) && CL.approx(y, 13.0) || CL.approx(x, 7.0) && CL.approx(y, 10.0) );
 
         System.out.println("x == " + x.value() + ", y == " + y.value());
@@ -158,8 +158,8 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new Constraint(x, CL.EQ, 10.0));
-            solver.addConstraint(new Constraint(x, CL.EQ, 5.0));
+            solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 10.0));
+            solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 5.0));
 
             // no exception, we failed!
             return(false);
@@ -180,8 +180,8 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new Constraint(x, CL.GEQ, 10.0));
-            solver.addConstraint(new Constraint(x, CL.LEQ, 5.0));
+            solver.addConstraint(new Constraint(x, Constraint.Operator.GEQ, 10.0));
+            solver.addConstraint(new Constraint(x, Constraint.Operator.LEQ, 5.0));
 
             // no exception, we failed!
             return(false);
@@ -267,12 +267,12 @@ public class Tests extends CL {
             Variable z = new Variable("z");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new Constraint(w, CL.GEQ, 10.0));
-            solver.addConstraint(new Constraint(x, CL.GEQ, w));
-            solver.addConstraint(new Constraint(y, CL.GEQ, x));
-            solver.addConstraint(new Constraint(z, CL.GEQ, y));
-            solver.addConstraint(new Constraint(z, CL.GEQ, 8.0));
-            solver.addConstraint(new Constraint(z, CL.LEQ, 4.0));
+            solver.addConstraint(new Constraint(w, Constraint.Operator.GEQ, 10.0));
+            solver.addConstraint(new Constraint(x, Constraint.Operator.GEQ, w));
+            solver.addConstraint(new Constraint(y, Constraint.Operator.GEQ, x));
+            solver.addConstraint(new Constraint(z, Constraint.Operator.GEQ, y));
+            solver.addConstraint(new Constraint(z, Constraint.Operator.GEQ, 8.0));
+            solver.addConstraint(new Constraint(z, Constraint.Operator.LEQ, 4.0));
 
             // no exception, we failed!
             return(false);
