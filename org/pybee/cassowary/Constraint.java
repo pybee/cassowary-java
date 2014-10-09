@@ -19,7 +19,7 @@ public abstract class Constraint
 
     public Constraint()
     {
-        _strength = Strength.required;
+        _strength = Strength.REQUIRED;
         _weight = 1.0;
     }
 
@@ -37,7 +37,7 @@ public abstract class Constraint
 
     public boolean isRequired()
     {
-        return _strength.isRequired();
+        return _strength == Strength.REQUIRED;
     }
 
     public boolean isStayConstraint()
@@ -57,7 +57,7 @@ public abstract class Constraint
 
     public String toString()
     {
-        return _strength.toString() + " {" + weight() + "} (" + expression(); }
+        return _strength + " {" + weight() + "} (" + expression(); }
 
     public void setAttachedObject(Object o)
     {

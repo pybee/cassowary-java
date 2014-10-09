@@ -16,7 +16,7 @@ public class StayConstraint extends EditOrStayConstraint
 
     public StayConstraint(Variable var)
     {
-        super(var, Strength.weak, 1.0);
+        super(var, Strength.WEAK, 1.0);
     }
 
     public boolean isStayConstraint()

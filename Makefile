@@ -14,7 +14,6 @@ JAVAFILES = \
 	LinearInequality.java \
 	StayConstraint.java \
 	Strength.java \
-	SymbolicWeight.java \
 	Variable.java \
 	Tableau.java \
 	SimplexSolver.java \
@@ -38,7 +37,7 @@ test:
 	java org.pybee.cassowary.test.Tests
 
 clean:
-	rm CassowaryLayout.jar
+	rm -f CassowaryLayout.jar
 	find . -name "*.class" -exec rm {} \;
 
 CassowaryLayout.jar: org/pybee/cassowary/*.java

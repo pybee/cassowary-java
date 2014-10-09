@@ -18,7 +18,7 @@ class LinearConstraint extends Constraint
 
     public LinearConstraint(LinearExpression cle)
     {
-        super(Strength.required, 1.0);
+        super(Strength.REQUIRED, 1.0);
         _expression = cle;
     }
 

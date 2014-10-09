@@ -31,7 +31,7 @@ public class LinearEquation extends LinearConstraint
 
     public LinearEquation(AbstractVariable clv, LinearExpression cle)
     {
-        this(clv, cle, Strength.required, 1.0);
+        this(clv, cle, Strength.REQUIRED, 1.0);
     }
 
     public LinearEquation(AbstractVariable clv, double val, Strength strength, double weight)
@@ -47,7 +47,7 @@ public class LinearEquation extends LinearConstraint
 
     public LinearEquation(AbstractVariable clv, double val)
     {
-        this(clv, val, Strength.required, 1.0);
+        this(clv, val, Strength.REQUIRED, 1.0);
     }
 
     public LinearEquation(LinearExpression cle, AbstractVariable clv, Strength strength, double weight)
@@ -64,7 +64,7 @@ public class LinearEquation extends LinearConstraint
 
     public LinearEquation(LinearExpression cle, AbstractVariable clv)
     {
-        this(cle, clv, Strength.required, 1.0);
+        this(cle, clv, Strength.REQUIRED, 1.0);
     }
 
     public LinearEquation(LinearExpression cle1, LinearExpression cle2, Strength strength, double weight)
@@ -80,7 +80,7 @@ public class LinearEquation extends LinearConstraint
 
     public LinearEquation(LinearExpression cle1, LinearExpression cle2)
     {
-        this(cle1, cle2, Strength.required, 1.0);
+        this(cle1, cle2, Strength.REQUIRED, 1.0);
     }
 
     public String toString()

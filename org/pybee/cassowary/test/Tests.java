@@ -19,7 +19,7 @@ public class Tests extends CL {
         Variable y = new Variable(2);
         SimplexSolver solver = new SimplexSolver();
 
-        LinearEquation eq = new LinearEquation(x,new LinearExpression(y));
+        LinearEquation eq = new LinearEquation(x, new LinearExpression(y));
         solver.addConstraint(eq);
         fOkResult = (x.value() == y.value());
 
@@ -38,8 +38,8 @@ public class Tests extends CL {
 
         solver.addStay(x);
         solver.addStay(y);
-        fOkResult = fOkResult && CL.approx(x,5);
-        fOkResult = fOkResult && CL.approx(y,10);
+        fOkResult = fOkResult && CL.approx(x, 5);
+        fOkResult = fOkResult && CL.approx(y, 10);
         System.out.println("x == " + x.value());
         System.out.println("y == " + y.value());
         return(fOkResult);
@@ -52,39 +52,39 @@ public class Tests extends CL {
         Variable x = new Variable("x");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint( new LinearEquation( x, 100, Strength.weak ) );
+        solver.addConstraint(new LinearEquation(x, 100, Strength.WEAK));
 
-        LinearInequality c10 = new LinearInequality(x,CL.LEQ,10.0);
-        LinearInequality c20 = new LinearInequality(x,CL.LEQ,20.0);
+        LinearInequality c10 = new LinearInequality(x, CL.LEQ, 10.0);
+        LinearInequality c20 = new LinearInequality(x, CL.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        fOkResult = fOkResult && CL.approx(x,10.0);
+        fOkResult = fOkResult && CL.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x,20.0);
+        fOkResult = fOkResult && CL.approx(x, 20.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c20);
-        fOkResult = fOkResult && CL.approx(x,100.0);
+        fOkResult = fOkResult && CL.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
-        LinearInequality c10again = new LinearInequality(x,CL.LEQ,10.0);
+        LinearInequality c10again = new LinearInequality(x, CL.LEQ, 10.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c10again);
 
-        fOkResult = fOkResult && CL.approx(x,10.0);
+        fOkResult = fOkResult && CL.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x,10.0);
+        fOkResult = fOkResult && CL.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10again);
-        fOkResult = fOkResult && CL.approx(x,100.0);
+        fOkResult = fOkResult && CL.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
         return(fOkResult);
@@ -98,33 +98,33 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new LinearEquation(x, 100.0, Strength.weak));
-        solver.addConstraint(new LinearEquation(y, 120.0, Strength.strong));
+        solver.addConstraint(new LinearEquation(x, 100.0, Strength.WEAK));
+        solver.addConstraint(new LinearEquation(y, 120.0, Strength.STRONG));
 
-        LinearInequality c10 = new LinearInequality(x,CL.LEQ,10.0);
-        LinearInequality c20 = new LinearInequality(x,CL.LEQ,20.0);
+        LinearInequality c10 = new LinearInequality(x, CL.LEQ, 10.0);
+        LinearInequality c20 = new LinearInequality(x, CL.LEQ, 20.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        fOkResult = fOkResult && CL.approx(x,10.0) && CL.approx(y,120.0);
+        fOkResult = fOkResult && CL.approx(x, 10.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x,20.0) && CL.approx(y,120.0);
+        fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         LinearEquation cxy = new LinearEquation(x.times(2.0), y);
         solver.addConstraint(cxy);
-        fOkResult = fOkResult && CL.approx(x,20.0) && CL.approx(y,40.0);
+        fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 40.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(c20);
-        fOkResult = fOkResult && CL.approx(x,60.0) && CL.approx(y,120.0);
+        fOkResult = fOkResult && CL.approx(x, 60.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(cxy);
-        fOkResult = fOkResult && CL.approx(x,100.0) && CL.approx(y,120.0);
+        fOkResult = fOkResult && CL.approx(x, 100.0) && CL.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         return(fOkResult);
@@ -138,12 +138,12 @@ public class Tests extends CL {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new LinearInequality(x,CL.LEQ,y));
+        solver.addConstraint(new LinearInequality(x, CL.LEQ,y));
         solver.addConstraint(new LinearEquation(y, x.plus(3.0)));
-        solver.addConstraint(new LinearEquation(x,10.0,Strength.weak));
-        solver.addConstraint(new LinearEquation(y,10.0,Strength.weak));
+        solver.addConstraint(new LinearEquation(x, 10.0, Strength.WEAK));
+        solver.addConstraint(new LinearEquation(y, 10.0, Strength.WEAK));
 
-        fOkResult = fOkResult && ( CL.approx(x,10.0) && CL.approx(y,13.0) || CL.approx(x,7.0) && CL.approx(y,10.0) );
+        fOkResult = fOkResult && ( CL.approx(x, 10.0) && CL.approx(y, 13.0) || CL.approx(x, 7.0) && CL.approx(y, 10.0) );
 
         System.out.println("x == " + x.value() + ", y == " + y.value());
         return(fOkResult);
@@ -157,7 +157,7 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearEquation(x,10.0));
+            solver.addConstraint(new LinearEquation(x, 10.0));
             solver.addConstraint(new LinearEquation(x, 5.0));
 
             // no exception, we failed!
@@ -179,8 +179,8 @@ public class Tests extends CL {
             Variable x = new Variable("x");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearInequality(x,CL.GEQ,10.0));
-            solver.addConstraint(new LinearInequality(x,CL.LEQ, 5.0));
+            solver.addConstraint(new LinearInequality(x, CL.GEQ, 10.0));
+            solver.addConstraint(new LinearInequality(x, CL.LEQ, 5.0));
 
             // no exception, we failed!
             return(false);
@@ -215,34 +215,34 @@ public class Tests extends CL {
             solver.addEditVar(y);
             solver.beginEdit();
 
-            solver.suggestValue(x,10);
-            solver.suggestValue(y,20);
+            solver.suggestValue(x, 10);
+            solver.suggestValue(y, 20);
             solver.resolve();
 
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x,10) && CL.approx(y,20) && CL.approx(w,0) && CL.approx(h,0);
+            fOkResult = fOkResult && CL.approx(x, 10) && CL.approx(y, 20) && CL.approx(w, 0) && CL.approx(h, 0);
 
             solver.addEditVar(w);
             solver.addEditVar(h);
             solver.beginEdit();
 
-            solver.suggestValue(w,30);
-            solver.suggestValue(h,40);
+            solver.suggestValue(w, 30);
+            solver.suggestValue(h, 40);
             solver.endEdit();
 
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x,10) && CL.approx(y,20) && CL.approx(w,30) && CL.approx(h,40);
+            fOkResult = fOkResult && CL.approx(x, 10) && CL.approx(y, 20) && CL.approx(w, 30) && CL.approx(h, 40);
 
-            solver.suggestValue(x,50).suggestValue(y,60).endEdit();
+            solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
 
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x,50) && CL.approx(y,60) && CL.approx(w,30) && CL.approx(h,40);
+            fOkResult = fOkResult && CL.approx(x, 50) && CL.approx(y, 60) && CL.approx(w, 30) && CL.approx(h, 40);
 
             return(fOkResult);
         }
@@ -266,12 +266,12 @@ public class Tests extends CL {
             Variable z = new Variable("z");
             SimplexSolver solver = new SimplexSolver();
 
-            solver.addConstraint(new LinearInequality(w,CL.GEQ,10.0));
-            solver.addConstraint(new LinearInequality(x,CL.GEQ,w));
-            solver.addConstraint(new LinearInequality(y,CL.GEQ,x));
-            solver.addConstraint(new LinearInequality(z,CL.GEQ,y));
-            solver.addConstraint(new LinearInequality(z,CL.GEQ,8.0));
-            solver.addConstraint(new LinearInequality(z,CL.LEQ, 4.0));
+            solver.addConstraint(new LinearInequality(w, CL.GEQ, 10.0));
+            solver.addConstraint(new LinearInequality(x, CL.GEQ, w));
+            solver.addConstraint(new LinearInequality(y, CL.GEQ, x));
+            solver.addConstraint(new LinearInequality(z, CL.GEQ, y));
+            solver.addConstraint(new LinearInequality(z, CL.GEQ, 8.0));
+            solver.addConstraint(new LinearInequality(z, CL.LEQ, 4.0));
 
             // no exception, we failed!
             return(false);
@@ -355,8 +355,8 @@ public class Tests extends CL {
 
         System.out.println("indices " + e1Index + ", " + e2Index);
 
-        EditConstraint edit1 = new EditConstraint(rgpclv[e1Index],Strength.strong);
-        EditConstraint edit2 = new EditConstraint(rgpclv[e2Index],Strength.strong);
+        EditConstraint edit1 = new EditConstraint(rgpclv[e1Index], Strength.STRONG);
+        EditConstraint edit2 = new EditConstraint(rgpclv[e2Index], Strength.STRONG);
 
         solver.addConstraint(edit1);
         solver.addConstraint(edit2);

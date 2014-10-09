@@ -13,12 +13,12 @@ abstract class EditOrStayConstraint extends Constraint
 
   public EditOrStayConstraint(Variable var, Strength strength)
   {
-      this(var,strength,1.0);
+      this(var, strength, 1.0);
   }
 
   public EditOrStayConstraint(Variable var)
   {
-      this(var,Strength.required,1.0);
+      this(var, Strength.REQUIRED, 1.0);
       _variable = var;
   }
 

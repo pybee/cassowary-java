@@ -6,12 +6,12 @@ public class LinearInequality extends LinearConstraint
 
     public LinearInequality(LinearExpression cle, Strength strength, double weight)
     {
-        super(cle,strength,weight);
+        super(cle, strength, weight);
     }
 
     public LinearInequality(LinearExpression cle, Strength strength)
     {
-        super(cle,strength);
+        super(cle, strength);
     }
 
     public LinearInequality(LinearExpression cle)
@@ -49,7 +49,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv1, byte op_enum, Variable clv2)
             throws InternalError
     {
-        this(clv1, op_enum, clv2, Strength.required, 1.0);
+        this(clv1, op_enum, clv2, Strength.REQUIRED, 1.0);
     }
 
 
@@ -82,7 +82,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv, byte op_enum, double val)
             throws InternalError
     {
-        this(clv, op_enum, val, Strength.required, 1.0);
+        this(clv, op_enum, val, Strength.REQUIRED, 1.0);
     }
 
     public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2, Strength strength, double weight)
@@ -114,7 +114,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(LinearExpression cle1, byte op_enum, LinearExpression cle2)
             throws InternalError
     {
-        this(cle1, op_enum, cle2, Strength.required, 1.0);
+        this(cle1, op_enum, cle2, Strength.REQUIRED, 1.0);
     }
 
     public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle, Strength strength, double weight)
@@ -146,7 +146,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle)
         throws InternalError
     {
-        this(clv, op_enum, cle, Strength.required, 1.0);
+        this(clv, op_enum, cle, Strength.REQUIRED, 1.0);
     }
 
     public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv, Strength strength, double weight)
@@ -178,7 +178,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv)
             throws InternalError
     {
-        this(cle, op_enum, clv, Strength.required, 1.0);
+        this(cle, op_enum, clv, Strength.REQUIRED, 1.0);
     }
 
     public final boolean isInequality()

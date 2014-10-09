@@ -194,7 +194,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addEditVar(Variable v)
             throws InternalError
     {
-        return addEditVar(v, Strength.strong);
+        return addEditVar(v, Strength.STRONG);
     }
 
     // Remove the edit constraint previously added for variable v
@@ -282,14 +282,16 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addStay(Variable v, Strength strength)
             throws RequiredFailure, InternalError
     {
-        addStay(v,strength,1.0); return this;
+        addStay(v, strength, 1.0);
+        return this;
     }
 
     // default to strength = weak
     public final SimplexSolver addStay(Variable v)
             throws RequiredFailure, InternalError
     {
-        addStay(v,Strength.weak,1.0); return this;
+        addStay(v, Strength.WEAK, 1.0);
+        return this;
     }
 
 
@@ -311,12 +313,12 @@ public class SimplexSolver extends Tableau
                 final LinearExpression expr = rowExpression(clv);
                 if (expr == null)
                 {
-                    zRow.addVariable(clv, -cn.weight() * cn.strength().symbolicWeight().asDouble(),
+                    zRow.addVariable(clv, -cn.weight() * cn.strength().value,
                     _objective, this);
                 }
                 else
                 { // the error variable was in the basis
-                    zRow.addExpression(expr, -cn.weight() * cn.strength().symbolicWeight().asDouble(),
+                    zRow.addExpression(expr, -cn.weight() * cn.strength().value,
                     _objective, this);
                 }
             }
@@ -900,7 +902,7 @@ public class SimplexSolver extends Tableau
                         if (c > 0.0 && v.isPivotable())
                         {
                             double zc = zRow.coefficientFor(v);
-                            r = zc/c; // FIXGJB r:= zc/c or zero, as SymbolicWeight-s
+                            r = zc / c; // FIXGJB r:= zc/c or zero, as SymbolicWeight-s
                             if (r < ratio)
                             {
                                 entryVar = v;
@@ -958,10 +960,10 @@ public class SimplexSolver extends Tableau
                 eminus = new SlackVariable(_slackCounter, "em");
                 expr.setVariable(eminus,1.0);
                 LinearExpression zRow = rowExpression(_objective);
-                SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
-                zRow.setVariable( eminus,sw.asDouble());
+                double swCoeff = cn.strength().value * cn.weight();
+                zRow.setVariable(eminus, swCoeff);
                 insertErrorVar(cn,eminus);
-                noteAddedVariable(eminus,_objective);
+                noteAddedVariable(eminus, _objective);
             }
         }
         else
@@ -984,8 +986,7 @@ public class SimplexSolver extends Tableau
                 expr.setVariable(eminus, 1.0);
                 _markerVars.put(cn,eplus);
                 LinearExpression zRow = rowExpression(_objective);
-                SymbolicWeight sw = cn.strength().symbolicWeight().times(cn.weight());
-                double swCoeff = sw.asDouble();
+                double swCoeff = cn.strength().value * cn.weight();
                 zRow.setVariable(eplus,swCoeff);
                 noteAddedVariable(eplus,_objective);
                 zRow.setVariable(eminus,swCoeff);
