@@ -88,34 +88,34 @@ public class LinearExpression
 
     public final LinearExpression plus(LinearExpression expr)
     {
-        return ((LinearExpression) clone()).addExpression(expr,1.0);
+        return ((LinearExpression) clone()).addExpression(expr, 1.0);
     }
 
     public final LinearExpression plus(Variable var)
         throws NonlinearExpression
     {
-        return ((LinearExpression) clone()).addVariable(var,1.0);
+        return ((LinearExpression) clone()).addVariable(var, 1.0);
     }
 
     public final LinearExpression minus(LinearExpression expr)
     {
-        return ((LinearExpression) clone()).addExpression(expr,-1.0);
+        return ((LinearExpression) clone()).addExpression(expr, -1.0);
     }
 
     public final LinearExpression minus(Variable var)
             throws NonlinearExpression
     {
-        return ((LinearExpression) clone()).addVariable(var,-1.0);
+        return ((LinearExpression) clone()).addVariable(var, -1.0);
     }
 
     public final LinearExpression divide(double x)
             throws NonlinearExpression
     {
-        if (CL.approx(x,0.0))
+        if (CL.approx(x, 0.0))
         {
             throw new NonlinearExpression();
         }
-        return times(1.0/x);
+        return times(1.0 / x);
     }
 
     public final LinearExpression divide(LinearExpression expr)
@@ -166,7 +166,7 @@ public class LinearExpression
         for (AbstractVariable clv: expr.terms().keySet())
         {
             double coeff = expr.terms().get(clv);
-            addVariable(clv,coeff*n);
+            addVariable(clv, coeff*n);
         }
         return this;
     }
@@ -197,7 +197,7 @@ public class LinearExpression
         }
         else
         {
-            if (!CL.approx(c,0.0))
+            if (!CL.approx(c, 0.0))
             {
                 _terms.put(v, new Double(c));
             }
@@ -228,9 +228,9 @@ public class LinearExpression
         if (coeff != null)
         {
             double new_coefficient = coeff.doubleValue() + c;
-            if (CL.approx(new_coefficient,0.0))
+            if (CL.approx(new_coefficient, 0.0))
             {
-                solver.noteRemovedVariable(v,subject);
+                solver.noteRemovedVariable(v, subject);
                 _terms.remove(v);
             }
             else
@@ -240,10 +240,10 @@ public class LinearExpression
         }
         else
         {
-            if (!CL.approx(c,0.0))
+            if (!CL.approx(c, 0.0))
             {
                 _terms.put(v, new Double(c));
-                solver.noteAddedVariable(v,subject);
+                solver.noteAddedVariable(v, subject);
             }
         }
         return this;
@@ -278,8 +278,7 @@ public class LinearExpression
     // because it now has a coefficient of 0, inform the solver.
     // PRECONDITIONS:
     //   var occurs with a non-zero coefficient in this expression.
-    public final void substituteOut(AbstractVariable var, LinearExpression expr,
-            AbstractVariable subject, Tableau solver)
+    public final void substituteOut(AbstractVariable var, LinearExpression expr, AbstractVariable subject, Tableau solver)
     {
         double multiplier = ((Double) _terms.remove(var)).doubleValue();
         incrementConstant(multiplier * expr.constant());
@@ -292,9 +291,9 @@ public class LinearExpression
             {
                 double old_coeff = d_old_coeff.doubleValue();
                 double newCoeff = old_coeff + multiplier * coeff;
-                if (CL.approx(newCoeff,0.0))
+                if (CL.approx(newCoeff, 0.0))
                 {
-                    solver.noteRemovedVariable(clv,subject);
+                    solver.noteRemovedVariable(clv, subject);
                     _terms.remove(clv);
                 }
                 else
@@ -306,7 +305,7 @@ public class LinearExpression
             {
                 // did not have that variable already
                 _terms.put(clv, new Double(multiplier * coeff));
-                solver.noteAddedVariable(clv,subject);
+                solver.noteAddedVariable(clv, subject);
             }
         }
     }
@@ -424,29 +423,29 @@ public class LinearExpression
         return bstr.toString();
     }
 
-    public final static LinearExpression Plus(LinearExpression e1, LinearExpression e2)
+    public final static LinearExpression plus(LinearExpression e1, LinearExpression e2)
     {
         return e1.plus(e2);
     }
 
-    public final static LinearExpression Minus(LinearExpression e1, LinearExpression e2)
+    public final static LinearExpression minus(LinearExpression e1, LinearExpression e2)
     {
         return e1.minus(e2);
     }
 
-    public final static LinearExpression Times(LinearExpression e1, LinearExpression e2)
+    public final static LinearExpression times(LinearExpression e1, LinearExpression e2)
             throws NonlinearExpression
     {
         return e1.times(e2);
     }
 
-    public final static LinearExpression Divide(LinearExpression e1, LinearExpression e2)
+    public final static LinearExpression divide(LinearExpression e1, LinearExpression e2)
             throws NonlinearExpression
     {
         return e1.divide(e2);
     }
 
-    public final static boolean FEquals(LinearExpression e1, LinearExpression e2)
+    public final static boolean fequals(LinearExpression e1, LinearExpression e2)
     {
         return e1 == e2;
     }

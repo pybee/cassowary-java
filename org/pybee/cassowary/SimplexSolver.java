@@ -74,7 +74,7 @@ public class SimplexSolver extends Tableau
         _fNeedsSolving = false;
 
         LinearExpression e = new LinearExpression();
-        _rows.put(_objective,e);
+        _rows.put(_objective, e);
         _stkCedcns = new Stack<Integer>();
         _stkCedcns.push(new Integer(0));
     }
@@ -83,7 +83,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addLowerBound(AbstractVariable v, double lower)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v,CL.GEQ,new LinearExpression(lower));
+        LinearInequality cn = new LinearInequality(v, CL.GEQ, new LinearExpression(lower));
         return addConstraint(cn);
     }
 
@@ -91,7 +91,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addUpperBound(AbstractVariable v, double upper)
             throws RequiredFailure, InternalError
     {
-        LinearInequality cn = new LinearInequality(v,CL.LEQ,new LinearExpression(upper));
+        LinearInequality cn = new LinearInequality(v, CL.LEQ, new LinearExpression(upper));
         return addConstraint(cn);
     }
 
@@ -110,9 +110,7 @@ public class SimplexSolver extends Tableau
     {
         Vector eplus_eminus = new Vector<Double>(2);
         Double prevEConstant = new Double(0.0);
-        LinearExpression expr = newExpression(cn, /* output to: */
-                                            eplus_eminus,
-                                            prevEConstant);
+        LinearExpression expr = newExpression(cn, eplus_eminus, prevEConstant);
         boolean fAddedOkDirectly = false;
 
         try
@@ -143,10 +141,10 @@ public class SimplexSolver extends Tableau
             EditConstraint cnEdit = (EditConstraint) cn;
             SlackVariable clvEplus = (SlackVariable) eplus_eminus.elementAt(0);
             SlackVariable clvEminus = (SlackVariable) eplus_eminus.elementAt(1);
-            _editVarMap.put(cnEdit.variable(),
-                      new EditInfo(cnEdit,clvEplus,clvEminus,
-                                     prevEConstant.doubleValue(),
-                                     i));
+            _editVarMap.put(
+                cnEdit.variable(),
+                new EditInfo(cnEdit, clvEplus, clvEminus, prevEConstant.doubleValue(), i)
+            );
         }
 
         if (_fOptimizeAutomatically)
@@ -274,7 +272,7 @@ public class SimplexSolver extends Tableau
     public final SimplexSolver addStay(Variable v, Strength strength, double weight)
             throws RequiredFailure, InternalError
     {
-        StayConstraint cn = new StayConstraint(v,strength,weight);
+        StayConstraint cn = new StayConstraint(v, strength, weight);
         return addConstraint(cn);
     }
 
@@ -313,12 +311,12 @@ public class SimplexSolver extends Tableau
                 final LinearExpression expr = rowExpression(clv);
                 if (expr == null)
                 {
-                    zRow.addVariable(clv, -cn.weight() * cn.strength().value,
+                    zRow.addVariable(clv, -cn.weight() * cn.strength().value(),
                     _objective, this);
                 }
                 else
                 { // the error variable was in the basis
-                    zRow.addExpression(expr, -cn.weight() * cn.strength().value,
+                    zRow.addExpression(expr, -cn.weight() * cn.strength().value(),
                     _objective, this);
                 }
             }
@@ -340,7 +338,7 @@ public class SimplexSolver extends Tableau
             for (AbstractVariable v: col)
             {
                 if (v.isRestricted() ) {
-                    final LinearExpression expr = rowExpression( v);
+                    final LinearExpression expr = rowExpression(v);
                     double coeff = expr.coefficientFor(marker);
                     if (coeff < 0.0)
                     {
@@ -579,7 +577,7 @@ public class SimplexSolver extends Tableau
             addEditVar(v);
             beginEdit();
             try {
-                suggestValue(v,n);
+                suggestValue(v, n);
             }
             catch (CassowaryError e)
             {
@@ -774,7 +772,7 @@ public class SimplexSolver extends Tableau
                     if (!foundNewRestricted && !v.isDummy() && c < 0.0)
                     {
                         final Set<AbstractVariable> col = _columns.get(v);
-                        if (col == null || ( col.size() == 1 && columnsHasKey(_objective) ) )
+                        if (col == null || (col.size() == 1 && columnsHasKey(_objective)))
                         {
                             subject = v;
                             foundNewRestricted = true;
@@ -810,7 +808,7 @@ public class SimplexSolver extends Tableau
             }
         }
 
-        if (!CL.approx(expr.constant(),0.0))
+        if (!CL.approx(expr.constant(), 0.0))
         {
             throw new RequiredFailure();
         }
@@ -940,11 +938,11 @@ public class SimplexSolver extends Tableau
             final LinearExpression e = rowExpression(v);
             if (e == null)
             {
-                expr.addVariable(v,c);
+                expr.addVariable(v, c);
             }
             else
             {
-                expr.addExpression(e,c);
+                expr.addExpression(e, c);
             }
         }
 
@@ -958,11 +956,11 @@ public class SimplexSolver extends Tableau
             {
                 ++_slackCounter;
                 eminus = new SlackVariable(_slackCounter, "em");
-                expr.setVariable(eminus,1.0);
+                expr.setVariable(eminus, 1.0);
                 LinearExpression zRow = rowExpression(_objective);
-                double swCoeff = cn.strength().value * cn.weight();
+                double swCoeff = cn.strength().value() * cn.weight();
                 zRow.setVariable(eminus, swCoeff);
-                insertErrorVar(cn,eminus);
+                insertErrorVar(cn, eminus);
                 noteAddedVariable(eminus, _objective);
             }
         }
@@ -973,8 +971,8 @@ public class SimplexSolver extends Tableau
             {
                 ++_dummyCounter;
                 dummyVar = new DummyVariable(_dummyCounter, "d");
-                expr.setVariable(dummyVar,1.0);
-                _markerVars.put(cn,dummyVar);
+                expr.setVariable(dummyVar, 1.0);
+                _markerVars.put(cn, dummyVar);
             }
             else
             {
@@ -984,15 +982,15 @@ public class SimplexSolver extends Tableau
 
                 expr.setVariable(eplus, -1.0);
                 expr.setVariable(eminus, 1.0);
-                _markerVars.put(cn,eplus);
+                _markerVars.put(cn, eplus);
                 LinearExpression zRow = rowExpression(_objective);
-                double swCoeff = cn.strength().value * cn.weight();
-                zRow.setVariable(eplus,swCoeff);
-                noteAddedVariable(eplus,_objective);
-                zRow.setVariable(eminus,swCoeff);
-                noteAddedVariable(eminus,_objective);
-                insertErrorVar(cn,eminus);
-                insertErrorVar(cn,eplus);
+                double swCoeff = cn.strength().value() * cn.weight();
+                zRow.setVariable(eplus, swCoeff);
+                noteAddedVariable(eplus, _objective);
+                zRow.setVariable(eminus, swCoeff);
+                noteAddedVariable(eminus, _objective);
+                insertErrorVar(cn, eminus);
+                insertErrorVar(cn, eplus);
                 if (cn.isStayConstraint())
                 {
                     _stayPlusErrorVars.addElement(eplus);

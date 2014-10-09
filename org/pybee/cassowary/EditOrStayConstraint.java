@@ -3,6 +3,10 @@ package org.pybee.cassowary;
 
 abstract class EditOrStayConstraint extends Constraint
 {
+  protected Variable  _variable;
+
+  // cache the expresion
+  private LinearExpression _expression;
 
   public EditOrStayConstraint(Variable var, Strength strength, double weight)
   {
@@ -36,10 +40,4 @@ abstract class EditOrStayConstraint extends Constraint
   {
       _variable = v;
   }
-
-  protected Variable  _variable;
-
-  // cache the expresion
-  private LinearExpression _expression;
-
 }

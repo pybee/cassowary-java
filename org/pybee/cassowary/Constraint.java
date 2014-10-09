@@ -5,6 +5,11 @@ import java.lang.*;
 
 public abstract class Constraint
 {
+    private Strength _strength;
+    private double _weight;
+
+    private Object _attachedObject;
+
     public Constraint(Strength strength, double weight)
     {
         _strength = strength;
@@ -57,7 +62,8 @@ public abstract class Constraint
 
     public String toString()
     {
-        return _strength + " {" + weight() + "} (" + expression(); }
+        return _strength + " {" + weight() + "} (" + expression();
+    }
 
     public void setAttachedObject(Object o)
     {
@@ -79,8 +85,4 @@ public abstract class Constraint
         _weight = weight;
     }
 
-    private Strength _strength;
-    private double _weight;
-
-    private Object _attachedObject;
 }

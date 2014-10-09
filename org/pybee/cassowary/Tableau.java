@@ -57,7 +57,7 @@ class Tableau
     {
         if (subject != null)
         {
-            insertColVar(v,subject);
+            insertColVar(v, subject);
         }
     }
 
@@ -125,11 +125,11 @@ class Tableau
     {
         // for each variable in expr, add var to the set of rows which
         // have that variable in their expression
-        _rows.put(var,expr);
+        _rows.put(var, expr);
 
         for (AbstractVariable clv: expr.terms().keySet())
         {
-            insertColVar(clv,var);
+            insertColVar(clv, var);
             if (clv.isExternal())
             {
                 _externalParametricVars.add((Variable) clv);
@@ -199,7 +199,7 @@ class Tableau
         for (AbstractVariable v: _columns.get(oldVar))
         {
             LinearExpression row = _rows.get(v);
-            row.substituteOut(oldVar,expr,v,this);
+            row.substituteOut(oldVar, expr, v, this);
             if (v.isRestricted() && row.constant() < 0.0)
             {
                 _infeasibleRows.add(v);

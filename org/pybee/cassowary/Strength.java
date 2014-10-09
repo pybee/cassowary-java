@@ -8,10 +8,14 @@ public enum Strength
     MEDIUM (1000),
     WEAK (1);
 
-    public int value;
+    private int _value;
 
     private Strength(int value) {
-        this.value = value;
+        this._value = value;
+    }
+
+    public int value() {
+        return _value;
     }
 
     public String toString(Strength strength) {
@@ -25,7 +29,7 @@ public enum Strength
             case WEAK:
                 return "Weak";
             default:
-                return "Unknown (" + value + ")";
+                return "Unknown (" + _value + ")";
         }
     }
 }

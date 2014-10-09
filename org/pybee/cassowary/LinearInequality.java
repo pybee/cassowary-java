@@ -22,7 +22,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv1, byte op_enum, Variable clv2, Strength strength, double weight)
             throws InternalError
     {
-        super(new LinearExpression(clv2),strength,weight);
+        super(new LinearExpression(clv2), strength, weight);
 
         if (op_enum == CL.GEQ)
         {
@@ -56,7 +56,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(Variable clv, byte op_enum, double val, Strength strength, double weight)
             throws InternalError
     {
-        super(new LinearExpression(val),strength,weight);
+        super(new LinearExpression(val), strength, weight);
         if (op_enum == CL.GEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -64,7 +64,7 @@ public class LinearInequality extends LinearConstraint
         }
         else if (op_enum == CL.LEQ)
         {
-            _expression.addVariable(clv,-1.0);
+            _expression.addVariable(clv, -1.0);
         }
         else
         {
@@ -96,7 +96,7 @@ public class LinearInequality extends LinearConstraint
         }
         else if (op_enum == CL.LEQ)
         {
-            _expression.addExpression(cle1,-1.0);
+            _expression.addExpression(cle1, -1.0);
         }
         else
         {
@@ -120,7 +120,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(AbstractVariable clv, byte op_enum, LinearExpression cle, Strength strength, double weight)
         throws InternalError
     {
-        super(((LinearExpression) cle.clone()),strength,weight);
+        super(((LinearExpression) cle.clone()), strength, weight);
         if (op_enum == CL.GEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -128,7 +128,7 @@ public class LinearInequality extends LinearConstraint
         }
         else if (op_enum == CL.LEQ)
         {
-            _expression.addVariable(clv,-1.0);
+            _expression.addVariable(clv, -1.0);
         }
         else
         {
@@ -152,7 +152,7 @@ public class LinearInequality extends LinearConstraint
     public LinearInequality(LinearExpression cle, byte op_enum, AbstractVariable clv, Strength strength, double weight)
             throws InternalError
     {
-        super(((LinearExpression) cle.clone()),strength,weight);
+        super(((LinearExpression) cle.clone()), strength, weight);
         if (op_enum == CL.LEQ)
         {
             _expression.multiplyMe(-1.0);
@@ -160,7 +160,7 @@ public class LinearInequality extends LinearConstraint
         }
         else if (op_enum == CL.GEQ)
         {
-            _expression.addVariable(clv,-1.0);
+            _expression.addVariable(clv, -1.0);
         }
         else
         {
@@ -188,6 +188,6 @@ public class LinearInequality extends LinearConstraint
 
     public final String toString()
     {
-        return super.toString() + " >= 0 )";
+        return super.toString() + " >= 0)";
     }
 }

@@ -8,10 +8,19 @@ package org.pybee.cassowary;
 // the parallel vectors of error variables and previous edit
 // constants from the smalltalk version of the code.
 class EditInfo {
+    private Constraint cn;
+    private SlackVariable clvEditPlus;
+    private SlackVariable clvEditMinus;
+    private double prevEditConstant;
+    private int i;
+
     public EditInfo(Constraint cn_, SlackVariable eplus_, SlackVariable eminus_, double prevEditConstant_, int i_)
     {
-        cn = cn_; clvEditPlus = eplus_; clvEditMinus = eminus_;
-        prevEditConstant = prevEditConstant_; i=i_;
+        cn = cn_;
+        clvEditPlus = eplus_;
+        clvEditMinus = eminus_;
+        prevEditConstant = prevEditConstant_;
+        i=i_;
     }
 
     public int Index()
@@ -39,14 +48,8 @@ class EditInfo {
         return prevEditConstant;
     }
 
-    public void SetPrevEditConstant(double prevEditConstant_ )
+    public void SetPrevEditConstant(double prevEditConstant_)
     {
         prevEditConstant = prevEditConstant_;
     }
-
-    private Constraint cn;
-    private SlackVariable clvEditPlus;
-    private SlackVariable clvEditMinus;
-    private double prevEditConstant;
-    private int i;
 }

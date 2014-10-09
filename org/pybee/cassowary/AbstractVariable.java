@@ -7,14 +7,12 @@ public abstract class AbstractVariable
 {
     public AbstractVariable(String name)
     {
-        //hash_code = iVariableNumber;
         _name = name;
         iVariableNumber++;
     }
 
     public AbstractVariable()
     {
-        //hash_code = iVariableNumber;
         _name = "v" + iVariableNumber;
         iVariableNumber++;
     }
