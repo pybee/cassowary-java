@@ -5,6 +5,10 @@ import java.lang.*;
 
 public abstract class AbstractVariable
 {
+    private static int iVariableNumber;
+
+    private String _name;
+
     public AbstractVariable(String name)
     {
         _name = name;
@@ -52,7 +56,4 @@ public abstract class AbstractVariable
         return iVariableNumber;
     }
 
-    private String _name;
-
-    private static int iVariableNumber;
 }

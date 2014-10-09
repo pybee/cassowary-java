@@ -17,7 +17,7 @@ class SlackVariable extends AbstractVariable
 
     public String toString()
     {
-        return "[" + name() + ":slack]";
+        return "[" + _name + ":slack]";
     }
 
     public boolean isExternal()

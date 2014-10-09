@@ -5,7 +5,6 @@ import java.util.Hashtable;
 
 public class Variable extends AbstractVariable
 {
-
     private static Hashtable _ourVarMap;
 
     private double _value;
@@ -137,5 +136,4 @@ public class Variable extends AbstractVariable
     {
         return new Expression(this).plus(new Expression(val));
     }
-
 }
