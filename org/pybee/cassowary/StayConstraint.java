@@ -1,22 +1,44 @@
 package org.pybee.cassowary;
 
 
-public class StayConstraint extends EditOrStayConstraint
+public class StayConstraint extends AbstractConstraint
 {
+    protected Variable  _variable;
+
+    // cache the expresion
+    private Expression _expression;
 
     public StayConstraint(Variable var, Strength strength, double weight)
     {
-        super(var, strength, weight);
+        super(strength, weight);
+        _variable = var;
+        _expression = new Expression(_variable, -1.0, _variable.value());
     }
 
     public StayConstraint(Variable var, Strength strength)
     {
-        super(var, strength, 1.0);
+        this(var, strength, 1.0);
     }
 
     public StayConstraint(Variable var)
     {
-        super(var, Strength.WEAK, 1.0);
+        this(var, Strength.REQUIRED, 1.0);
+        _variable = var;
+    }
+
+    public Variable variable()
+    {
+        return _variable;
+    }
+
+    public Expression expression()
+    {
+        return _expression;
+    }
+
+    private void setVariable(Variable v)
+    {
+        _variable = v;
     }
 
     public boolean isStayConstraint()
