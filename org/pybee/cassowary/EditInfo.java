@@ -8,48 +8,48 @@ package org.pybee.cassowary;
 // the parallel vectors of error variables and previous edit
 // constants from the smalltalk version of the code.
 class EditInfo {
-    private AbstractConstraint cn;
-    private SlackVariable clvEditPlus;
-    private SlackVariable clvEditMinus;
-    private double prevEditConstant;
-    private int i;
+    private AbstractConstraint _cn;
+    private SlackVariable _clvEditPlus;
+    private SlackVariable _clvEditMinus;
+    private double _prevEditConstant;
+    private int _i;
 
-    public EditInfo(AbstractConstraint cn_, SlackVariable eplus_, SlackVariable eminus_, double prevEditConstant_, int i_)
+    public EditInfo(AbstractConstraint cn, SlackVariable eplus, SlackVariable eminus, double prevEditConstant, int i)
     {
-        cn = cn_;
-        clvEditPlus = eplus_;
-        clvEditMinus = eminus_;
-        prevEditConstant = prevEditConstant_;
-        i=i_;
+        _cn = cn;
+        _clvEditPlus = eplus;
+        _clvEditMinus = eminus;
+        _prevEditConstant = prevEditConstant;
+        _i = i;
     }
 
-    public int Index()
+    public int index()
     {
-        return i;
+        return _i;
     }
 
-    public AbstractConstraint Constraint()
+    public AbstractConstraint constraint()
     {
-        return cn;
+        return _cn;
     }
 
-    public SlackVariable ClvEditPlus()
+    public SlackVariable clvEditPlus()
     {
-        return clvEditPlus;
+        return _clvEditPlus;
     }
 
-    public SlackVariable ClvEditMinus()
+    public SlackVariable clvEditMinus()
     {
-        return clvEditMinus;
+        return _clvEditMinus;
     }
 
-    public double PrevEditConstant()
+    public double prevEditConstant()
     {
-        return prevEditConstant;
+        return _prevEditConstant;
     }
 
-    public void SetPrevEditConstant(double prevEditConstant_)
+    public void setPrevEditConstant(double prevEditConstant)
     {
-        prevEditConstant = prevEditConstant_;
+        _prevEditConstant = prevEditConstant;
     }
 }

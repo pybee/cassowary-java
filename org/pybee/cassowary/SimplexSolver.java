@@ -200,7 +200,7 @@ public class SimplexSolver extends Tableau
             throws InternalError, ConstraintNotFound
     {
         EditInfo cei = _editVarMap.get(v);
-        AbstractConstraint cn = cei.Constraint();
+        AbstractConstraint cn = cei.constraint();
         removeConstraint(cn);
         return this;
     }
@@ -252,7 +252,7 @@ public class SimplexSolver extends Tableau
             {
                 Variable v = e.nextElement();
                 EditInfo cei = _editVarMap.get(v);
-                if (cei.Index() >= n)
+                if (cei.index() >= n)
                 {
                     removeEditVar(v);
                 }
@@ -423,7 +423,7 @@ public class SimplexSolver extends Tableau
             EditConstraint cnEdit = (EditConstraint) cn;
             Variable clv = cnEdit.variable();
             EditInfo cei = _editVarMap.get(clv);
-            SlackVariable clvEditMinus = cei.ClvEditMinus();
+            SlackVariable clvEditMinus = cei.clvEditMinus();
             // SlackVariable clvEditPlus = cei.ClvEditPlus();
             // the clvEditPlus is a marker variable that is removed elsewhere
             removeColumn(clvEditMinus);
@@ -469,7 +469,7 @@ public class SimplexSolver extends Tableau
         for (Variable v: _editVarMap.keySet())
         {
             EditInfo cei = _editVarMap.get(v);
-            int i = cei.Index();
+            int i = cei.index();
             try
             {
                 if (i < newEditConstants.size())
@@ -520,11 +520,11 @@ public class SimplexSolver extends Tableau
             System.err.println("suggestValue for variable " + v + ", but var is not an edit variable\n");
             throw new CassowaryError();
         }
-        int i = cei.Index();
-        SlackVariable clvEditPlus = cei.ClvEditPlus();
-        SlackVariable clvEditMinus = cei.ClvEditMinus();
-        double delta = x - cei.PrevEditConstant();
-        cei.SetPrevEditConstant(x);
+        int i = cei.index();
+        SlackVariable clvEditPlus = cei.clvEditPlus();
+        SlackVariable clvEditMinus = cei.clvEditMinus();
+        double delta = x - cei.prevEditConstant();
+        cei.setPrevEditConstant(x);
         deltaEditConstant(delta, clvEditPlus, clvEditMinus);
         return this;
     }
