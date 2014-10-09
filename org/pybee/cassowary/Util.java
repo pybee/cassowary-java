@@ -1,7 +1,7 @@
 package org.pybee.cassowary;
 
 
-public class CL {
+public class Util {
     public static boolean approx(double a, double b)
     {
         double epsilon = 1.0e-8;
@@ -24,7 +24,7 @@ public class CL {
         return approx(clv.value(),b);
     }
 
-    static boolean approx(double a, Variable clv)
+    public static boolean approx(double a, Variable clv)
     {
         return approx(a,clv.value());
     }

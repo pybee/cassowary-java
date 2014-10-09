@@ -1,31 +1,26 @@
 
 JAVAFILES = \
+	AbstractConstraint.java \
 	AbstractVariable.java \
-	DummyVariable.java \
-	ObjectiveVariable.java \
-	SlackVariable.java \
+	CassowaryError.java \
 	Constraint.java \
+	ConstraintNotFound.java \
+	DummyVariable.java \
 	EditConstraint.java \
 	EditInfo.java \
-	EditOrStayConstraint.java \
-	LinearConstraint.java \
-	LinearEquation.java \
-	LinearExpression.java \
-	LinearInequality.java \
-	StayConstraint.java \
-	Strength.java \
-	Variable.java \
-	Tableau.java \
-	SimplexSolver.java \
-	ConstraintNotFound.java \
-	CassowaryError.java \
-	InternalError.java \
+	Expression.java \
 	NonlinearExpression.java \
 	NotEnoughStays.java \
+	ObjectiveVariable.java \
 	RequiredFailure.java \
+	SimplexSolver.java \
+	SlackVariable.java \
+	StayConstraint.java \
+	Strength.java \
+	Tableau.java \
 	TooDifficult.java \
-	CL.java \
-	Timer.java
+	Util.java \
+	Variable.java
 
 
 java_JAVA = $(JAVAFILES)

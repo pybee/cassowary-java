@@ -5,7 +5,7 @@ import java.util.Random;
 import org.pybee.cassowary.*;
 
 
-public class Tests extends CL {
+public class Tests {
     static private Random RND;
 
     public Tests()
@@ -40,8 +40,8 @@ public class Tests extends CL {
 
         solver.addStay(x);
         solver.addStay(y);
-        fOkResult = fOkResult && CL.approx(x, 5);
-        fOkResult = fOkResult && CL.approx(y, 10);
+        fOkResult = fOkResult && Util.approx(x, 5);
+        fOkResult = fOkResult && Util.approx(y, 10);
         System.out.println("x == " + x.value());
         System.out.println("y == " + y.value());
         return(fOkResult);
@@ -62,15 +62,15 @@ public class Tests extends CL {
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        fOkResult = fOkResult && CL.approx(x, 10.0);
+        fOkResult = fOkResult && Util.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x, 20.0);
+        fOkResult = fOkResult && Util.approx(x, 20.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c20);
-        fOkResult = fOkResult && CL.approx(x, 100.0);
+        fOkResult = fOkResult && Util.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
         Constraint c10again = new Constraint(x, Constraint.Operator.LEQ, 10.0);
@@ -78,15 +78,15 @@ public class Tests extends CL {
         solver.addConstraint(c10);
         solver.addConstraint(c10again);
 
-        fOkResult = fOkResult && CL.approx(x, 10.0);
+        fOkResult = fOkResult && Util.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x, 10.0);
+        fOkResult = fOkResult && Util.approx(x, 10.0);
         System.out.println("x == " + x.value());
 
         solver.removeConstraint(c10again);
-        fOkResult = fOkResult && CL.approx(x, 100.0);
+        fOkResult = fOkResult && Util.approx(x, 100.0);
         System.out.println("x == " + x.value());
 
         return(fOkResult);
@@ -109,24 +109,24 @@ public class Tests extends CL {
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        fOkResult = fOkResult && CL.approx(x, 10.0) && CL.approx(y, 120.0);
+        fOkResult = fOkResult && Util.approx(x, 10.0) && Util.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(c10);
-        fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 120.0);
+        fOkResult = fOkResult && Util.approx(x, 20.0) && Util.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         Constraint cxy = new Constraint(x.times(2.0), Constraint.Operator.EQ, y);
         solver.addConstraint(cxy);
-        fOkResult = fOkResult && CL.approx(x, 20.0) && CL.approx(y, 40.0);
+        fOkResult = fOkResult && Util.approx(x, 20.0) && Util.approx(y, 40.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(c20);
-        fOkResult = fOkResult && CL.approx(x, 60.0) && CL.approx(y, 120.0);
+        fOkResult = fOkResult && Util.approx(x, 60.0) && Util.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         solver.removeConstraint(cxy);
-        fOkResult = fOkResult && CL.approx(x, 100.0) && CL.approx(y, 120.0);
+        fOkResult = fOkResult && Util.approx(x, 100.0) && Util.approx(y, 120.0);
         System.out.println("x == " + x.value() + ", y == " + y.value());
 
         return(fOkResult);
@@ -144,7 +144,7 @@ public class Tests extends CL {
         solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, x.plus(3.0)));
         solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 10.0, Strength.WEAK));
         solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, 10.0, Strength.WEAK));
-        fOkResult = fOkResult && ( CL.approx(x, 10.0) && CL.approx(y, 13.0) || CL.approx(x, 7.0) && CL.approx(y, 10.0) );
+        fOkResult = fOkResult && ( Util.approx(x, 10.0) && Util.approx(y, 13.0) || Util.approx(x, 7.0) && Util.approx(y, 10.0) );
 
         System.out.println("x == " + x.value() + ", y == " + y.value());
         return(fOkResult);
@@ -223,7 +223,7 @@ public class Tests extends CL {
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x, 10) && CL.approx(y, 20) && CL.approx(w, 0) && CL.approx(h, 0);
+            fOkResult = fOkResult && Util.approx(x, 10) && Util.approx(y, 20) && Util.approx(w, 0) && Util.approx(h, 0);
 
             solver.addEditVar(w);
             solver.addEditVar(h);
@@ -236,14 +236,14 @@ public class Tests extends CL {
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x, 10) && CL.approx(y, 20) && CL.approx(w, 30) && CL.approx(h, 40);
+            fOkResult = fOkResult && Util.approx(x, 10) && Util.approx(y, 20) && Util.approx(w, 30) && Util.approx(h, 40);
 
             solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
 
             System.out.println("x = " + x.value() + "; y = " + y.value());
             System.out.println("w = " + w.value() + "; h = " + h.value());
 
-            fOkResult = fOkResult && CL.approx(x, 50) && CL.approx(y, 60) && CL.approx(w, 30) && CL.approx(h, 40);
+            fOkResult = fOkResult && Util.approx(x, 50) && Util.approx(y, 60) && Util.approx(w, 30) && Util.approx(h, 40);
 
             return(fOkResult);
         }

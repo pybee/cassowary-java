@@ -573,7 +573,7 @@ public class SimplexSolver extends Tableau
             return this;
         }
 
-        if (!CL.approx(n, v.value())) {
+        if (!Util.approx(n, v.value())) {
             addEditVar(v);
             beginEdit();
             try {
@@ -672,7 +672,7 @@ public class SimplexSolver extends Tableau
 
         Expression azTableauRow = rowExpression(az);
 
-        if (!CL.approx(azTableauRow.constant(), 0.0))
+        if (!Util.approx(azTableauRow.constant(), 0.0))
         {
             removeRow(az);
             removeColumn(av);
@@ -808,7 +808,7 @@ public class SimplexSolver extends Tableau
             }
         }
 
-        if (!CL.approx(expr.constant(), 0.0))
+        if (!Util.approx(expr.constant(), 0.0))
         {
             throw new RequiredFailure();
         }

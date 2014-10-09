@@ -111,7 +111,7 @@ public class Expression
     public final Expression divide(double x)
             throws NonlinearExpression
     {
-        if (CL.approx(x, 0.0))
+        if (Util.approx(x, 0.0))
         {
             throw new NonlinearExpression();
         }
@@ -131,7 +131,7 @@ public class Expression
     public final Expression divFrom(Expression expr)
             throws NonlinearExpression
     {
-        if (!isConstant() || CL.approx(_constant, 0.0))
+        if (!isConstant() || Util.approx(_constant, 0.0))
         {
             throw new NonlinearExpression();
         }
@@ -186,7 +186,7 @@ public class Expression
         if (coeff != null)
         {
             double new_coefficient = coeff + c;
-            if (CL.approx(new_coefficient, 0.0))
+            if (Util.approx(new_coefficient, 0.0))
             {
                 _terms.remove(v);
             }
@@ -197,7 +197,7 @@ public class Expression
         }
         else
         {
-            if (!CL.approx(c, 0.0))
+            if (!Util.approx(c, 0.0))
             {
                 _terms.put(v, new Double(c));
             }
@@ -228,7 +228,7 @@ public class Expression
         if (coeff != null)
         {
             double new_coefficient = coeff.doubleValue() + c;
-            if (CL.approx(new_coefficient, 0.0))
+            if (Util.approx(new_coefficient, 0.0))
             {
                 solver.noteRemovedVariable(v, subject);
                 _terms.remove(v);
@@ -240,7 +240,7 @@ public class Expression
         }
         else
         {
-            if (!CL.approx(c, 0.0))
+            if (!Util.approx(c, 0.0))
             {
                 _terms.put(v, new Double(c));
                 solver.noteAddedVariable(v, subject);
@@ -291,7 +291,7 @@ public class Expression
             {
                 double old_coeff = d_old_coeff.doubleValue();
                 double newCoeff = old_coeff + multiplier * coeff;
-                if (CL.approx(newCoeff, 0.0))
+                if (Util.approx(newCoeff, 0.0))
                 {
                     solver.noteRemovedVariable(clv, subject);
                     _terms.remove(clv);
@@ -400,7 +400,7 @@ public class Expression
         StringBuffer bstr = new StringBuffer();
         Iterator<AbstractVariable> e = _terms.keySet().iterator();
 
-        if (!CL.approx(_constant, 0.0) || _terms.size() == 0)
+        if (!Util.approx(_constant, 0.0) || _terms.size() == 0)
         {
             bstr.append(_constant);
         }
