@@ -4,7 +4,28 @@ package org.pybee.cassowary;
 public class Constraint extends AbstractConstraint
 {
     public enum Operator {
-        LEQ, EQ, GEQ;
+        LEQ (-1),
+        EQ (0),
+        GEQ (-1);
+
+        private int _value;
+
+        private Operator(int value) {
+            this._value = value;
+        }
+
+        public int value() {
+            return _value;
+        }
+
+        public static Operator fromValue(int value) {
+            switch (value) {
+                case -1: return LEQ;
+                case 0: return EQ;
+                case 1: return GEQ;
+                default: throw new RuntimeException("Unknown value " + value);
+            }
+        }
     }
 
     protected Expression _expression;
