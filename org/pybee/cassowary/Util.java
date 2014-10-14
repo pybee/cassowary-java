@@ -7,15 +7,15 @@ public class Util {
         double epsilon = 1.0e-8;
         if (a == 0.0)
         {
-	          return (Math.abs(b) < epsilon);
+	        return (Math.abs(b) < epsilon);
         }
         else if (b == 0.0)
         {
-	          return (Math.abs(a) < epsilon);
+	        return (Math.abs(a) < epsilon);
         }
         else
         {
-	          return (Math.abs(a-b) < Math.abs(a) * epsilon);
+	        return (Math.abs(a-b) < Math.abs(a) * epsilon);
         }
     }
 
