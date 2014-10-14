@@ -35,4 +35,4 @@ clean:
 
 CassowaryLayout.jar: org/pybee/cassowary/*.java
 	javac org/pybee/cassowary/*.java
-	jar -cvf CassowaryLayout.jar org/pybee/cassowary/*.java
+	jar -cvf CassowaryLayout.jar org/pybee/cassowary/*.class
