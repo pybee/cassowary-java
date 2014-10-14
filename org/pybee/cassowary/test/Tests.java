@@ -140,7 +140,7 @@ public class Tests {
         Variable y = new Variable("y");
         SimplexSolver solver = new SimplexSolver();
 
-        solver.addConstraint(new Constraint(x, Constraint.Operator.LEQ,y));
+        solver.addConstraint(new Constraint(x, Constraint.Operator.LEQ, y));
         solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, x.plus(3.0)));
         solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 10.0, Strength.WEAK));
         solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, 10.0, Strength.WEAK));
