@@ -69,7 +69,7 @@ public class Expression
 
     public final Expression times(double x)
     {
-      return ((Expression) clone()).multiplyMe(x);
+      return clone().multiplyMe(x);
     }
 
     public final Expression times(Expression expr)
@@ -88,24 +88,24 @@ public class Expression
 
     public final Expression plus(Expression expr)
     {
-        return ((Expression) clone()).addExpression(expr, 1.0);
+        return clone().addExpression(expr, 1.0);
     }
 
     public final Expression plus(Variable var)
         throws NonlinearExpression
     {
-        return ((Expression) clone()).addVariable(var, 1.0);
+        return clone().addVariable(var, 1.0);
     }
 
     public final Expression minus(Expression expr)
     {
-        return ((Expression) clone()).addExpression(expr, -1.0);
+        return clone().addExpression(expr, -1.0);
     }
 
     public final Expression minus(Variable var)
             throws NonlinearExpression
     {
-        return ((Expression) clone()).addVariable(var, -1.0);
+        return clone().addVariable(var, -1.0);
     }
 
     public final Expression divide(double x)
