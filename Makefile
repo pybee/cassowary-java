@@ -23,16 +23,20 @@ JAVAFILES = \
 
 java_JAVA = $(JAVAFILES)
 
-all: CassowaryLayout.jar
+all: AndroidCassowary.jar
 
 test:
 	javac org/pybee/cassowary/test/*.java
 	java org.pybee.cassowary.test.Tests
 
 clean:
-	rm -f CassowaryLayout.jar
+	rm -f AndroidCassowary.jar Cassowary.jar
 	find . -name "*.class" -exec rm {} \;
 
-CassowaryLayout.jar: org/pybee/cassowary/*.java
+AndroidCassowary.jar: org/pybee/android/*.java Cassowary.jar
+	javac -cp $(ANDROIDSDK)/platforms/android-14/android.jar:Cassowary.jar org/pybee/android/*.java
+	jar -cvf AndroidCassowary.jar org/pybee/cassowary/*.class org/pybee/android/*.class
+
+Cassowary.jar: org/pybee/cassowary/*.java
 	javac org/pybee/cassowary/*.java
-	jar -cvf CassowaryLayout.jar org/pybee/cassowary/*.class
+	jar -cvf Cassowary.jar org/pybee/cassowary/*.class
