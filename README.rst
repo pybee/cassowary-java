@@ -35,6 +35,9 @@ Cassowary-java is part of the `BeeWare suite`_. You can talk to the community th
 
 * The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
 
+The Cassowary community also has `a mailing list`_; it provides more general
+assistance regarding the Cassowary algorithm itself.
+
 Contributing
 ------------
 
@@ -49,6 +52,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _log them on Github: https://github.com/pybee/cassowary-java/issues
 .. _fork the code: https://github.com/pybee/cassowary-java
 .. _submit a pull request: https://github.com/pybee/cassowary-java/pulls
+.. _a mailing list: http://groups.google.com/forum/#!forum/overconstrained
 
 Acknowledgements
 ----------------
