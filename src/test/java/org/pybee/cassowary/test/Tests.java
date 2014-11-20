@@ -199,6 +199,58 @@ public class Tests {
     }
 
 
+    @Test
+    public void multieditAutoSolveOff() throws CassowaryError {
+        Variable x = new Variable("x");
+        Variable y = new Variable("y");
+        Variable w = new Variable("w");
+        Variable h = new Variable("h");
+        SimplexSolver solver = new SimplexSolver();
+        solver.setAutosolve(false);
+
+        solver.addStay(x);
+        solver.addStay(y);
+        solver.addStay(w);
+        solver.addStay(h);
+
+        solver.addEditVar(x);
+        solver.addEditVar(y);
+        solver.beginEdit();
+
+        solver.suggestValue(x, 10);
+        solver.suggestValue(y, 20);
+        solver.resolve();
+        solver.solve();
+
+        assertEquals(10, x.value(), EPSILON);
+        assertEquals(20, y.value(), EPSILON);
+        assertEquals(0, w.value(), EPSILON);
+        assertEquals(0, h.value(), EPSILON);
+
+
+        solver.addEditVar(w);
+        solver.addEditVar(h);
+        solver.beginEdit();
+
+        solver.suggestValue(w, 30);
+        solver.suggestValue(h, 40);
+        solver.endEdit();
+
+        solver.solve();
+
+        assertEquals(10, x.value(), EPSILON);
+        assertEquals(20, y.value(), EPSILON);
+        assertEquals(30, w.value(), EPSILON);
+        assertEquals(40, h.value(), EPSILON);
+
+        solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
+        solver.solve();
+
+        assertEquals(50, x.value(), EPSILON);
+        assertEquals(60, y.value(), EPSILON);
+        assertEquals(30, w.value(), EPSILON);
+        assertEquals(40, h.value(), EPSILON);
+    }
 
     @Test(expected = RequiredFailure.class)
     public void inconsistent3() {
