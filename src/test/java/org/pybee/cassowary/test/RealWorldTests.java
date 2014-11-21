@@ -1,6 +1,7 @@
 package org.pybee.cassowary.test;
 
 import org.junit.Test;
+import org.pybee.cassowary.CassowaryError;
 import org.pybee.cassowary.Constraint;
 import org.pybee.cassowary.ConstraintNotFound;
 import org.pybee.cassowary.Expression;
@@ -64,9 +65,9 @@ public class RealWorldTests {
 
             "thumb2.left == container.leftPadding",
             "thumb2.top >= title0.bottom + container.rowPadding",
-            "thumb2.top == title0.bottom + container.rowPadding !strong",
+            "thumb2.top == title0.bottom + container.rowPadding !weak",
             "thumb2.top >= title1.bottom + container.rowPadding",
-            "thumb2.top == title1.bottom + container.rowPadding !strong",
+            "thumb2.top == title1.bottom + container.rowPadding !weak",
             "thumb2.height == container.thumbHeight",
             "thumb2.width == container.columnWidth",
 
@@ -89,8 +90,8 @@ public class RealWorldTests {
             "thumb4.left == container.leftPadding",
             "thumb4.top >= title2.bottom + container.rowPadding",
             "thumb4.top >= title3.bottom + container.rowPadding",
-            "thumb4.top == title2.bottom + container.rowPadding !strong",
-            "thumb4.top == title3.bottom + container.rowPadding !strong",
+            "thumb4.top == title2.bottom + container.rowPadding !weak",
+            "thumb4.top == title3.bottom + container.rowPadding !weak",
             "thumb4.height == container.thumbHeight",
             "thumb4.width == container.columnWidth",
 
@@ -121,15 +122,8 @@ public class RealWorldTests {
 
             "container.height == more.bottom + container.buttonPadding"};
 
-    @Test
-    public void testGrid() throws ConstraintNotFound {
 
-        final SimplexSolver solver = new SimplexSolver();
-        solver.setAutosolve(false);
-
-        final HashMap<String, HashMap<String, Variable>> nodeHashMap = new HashMap<String, HashMap<String, Variable>>();
-
-
+    public ConstraintParser.CassowaryVariableResolver createVariableResolver(final SimplexSolver solver, final HashMap<String, HashMap<String, Variable>> nodeHashMap) {
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
             private Variable getVariableFromNode(HashMap<String, Variable> node, String variableName) {
@@ -188,12 +182,23 @@ public class RealWorldTests {
                 }
             }
         };
+        return variableResolver;
+    }
+
+
+    @Test
+    public void testGridLayout() throws ConstraintNotFound {
+
+        final SimplexSolver solver = new SimplexSolver();
+        solver.setAutosolve(false);
+
+        final HashMap<String, HashMap<String, Variable>> nodeHashMap = new HashMap<String, HashMap<String, Variable>>();
+
+        ConstraintParser.CassowaryVariableResolver variableResolver = createVariableResolver(solver, nodeHashMap);
 
         for (String constraint : CONSTRAINTS) {
             solver.addConstraint(ConstraintParser.parseConstraint(constraint, variableResolver));
         }
-
-        System.out.println("node count " + nodeHashMap.size());
 
         solver.addConstraint(ConstraintParser.parseConstraint("container.width == 300", variableResolver));
         solver.addConstraint(ConstraintParser.parseConstraint("title0.intrinsicHeight == 100", variableResolver));
@@ -206,16 +211,86 @@ public class RealWorldTests {
 
         solver.solve();
 
-        System.out.println("variable count " + nodeHashMap.size());
-        printNodes(nodeHashMap);
-
-
         assertEquals(20, nodeHashMap.get("thumb0").get("top").value(), EPSILON);
         assertEquals(20, nodeHashMap.get("thumb1").get("top").value(), EPSILON);
 
         assertEquals(85, nodeHashMap.get("title0").get("top").value(), EPSILON);
         assertEquals(85, nodeHashMap.get("title1").get("top").value(), EPSILON);
 
+        assertEquals(210, nodeHashMap.get("thumb2").get("top").value(), EPSILON);
+        assertEquals(210, nodeHashMap.get("thumb3").get("top").value(), EPSILON);
+
+        assertEquals(275, nodeHashMap.get("title2").get("top").value(), EPSILON);
+        assertEquals(275, nodeHashMap.get("title3").get("top").value(), EPSILON);
+
+        assertEquals(420, nodeHashMap.get("thumb4").get("top").value(), EPSILON);
+        assertEquals(420, nodeHashMap.get("thumb5").get("top").value(), EPSILON);
+
+        assertEquals(485, nodeHashMap.get("title4").get("top").value(), EPSILON);
+        assertEquals(485, nodeHashMap.get("title5").get("top").value(), EPSILON);
+
+    }
+
+    @Test
+    public void testGridLayoutUsingEditVariables() throws CassowaryError {
+
+        final SimplexSolver solver = new SimplexSolver();
+        solver.setAutosolve(true);
+
+        final HashMap<String, HashMap<String, Variable>> nodeHashMap = new HashMap<String, HashMap<String, Variable>>();
+
+        ConstraintParser.CassowaryVariableResolver variableResolver = createVariableResolver(solver, nodeHashMap);
+
+        for (String constraint : CONSTRAINTS) {
+            solver.addConstraint(ConstraintParser.parseConstraint(constraint, variableResolver));
+        }
+
+        Variable containerWidth = nodeHashMap.get("container").get("width");
+        Variable title0IntrinsicHeight = nodeHashMap.get("title0").get("intrinsicHeight");
+        Variable title1IntrinsicHeight = nodeHashMap.get("title1").get("intrinsicHeight");
+        Variable title2IntrinsicHeight = nodeHashMap.get("title2").get("intrinsicHeight");
+        Variable title3IntrinsicHeight = nodeHashMap.get("title3").get("intrinsicHeight");
+        Variable title4IntrinsicHeight = nodeHashMap.get("title4").get("intrinsicHeight");
+        Variable title5IntrinsicHeight = nodeHashMap.get("title5").get("intrinsicHeight");
+        Variable moreIntrinsicHeight = nodeHashMap.get("more").get("intrinsicHeight");
+
+        solver.addStay(containerWidth);
+        solver.addStay(title0IntrinsicHeight);
+        solver.addStay(title1IntrinsicHeight);
+        solver.addStay(title2IntrinsicHeight);
+        solver.addStay(title3IntrinsicHeight);
+        solver.addStay(title4IntrinsicHeight);
+        solver.addStay(title5IntrinsicHeight);
+        solver.addStay(moreIntrinsicHeight);
+
+        solver.addEditVar(containerWidth);
+        solver.addEditVar(title0IntrinsicHeight);
+        solver.addEditVar(title1IntrinsicHeight);
+        solver.addEditVar(title2IntrinsicHeight);
+        solver.addEditVar(title3IntrinsicHeight);
+        solver.addEditVar(title4IntrinsicHeight);
+        solver.addEditVar(title5IntrinsicHeight);
+        solver.addEditVar(moreIntrinsicHeight);
+        solver.beginEdit();
+
+        solver.suggestValue(containerWidth, 300);
+        solver.suggestValue(title0IntrinsicHeight, 100);
+        solver.suggestValue(title1IntrinsicHeight, 110);
+        solver.suggestValue(title2IntrinsicHeight, 120);
+        solver.suggestValue(title3IntrinsicHeight, 130);
+        solver.suggestValue(title4IntrinsicHeight, 140);
+        solver.suggestValue(title5IntrinsicHeight, 150);
+        solver.suggestValue(moreIntrinsicHeight, 160);
+
+        solver.resolve();
+
+        solver.solve();
+
+        assertEquals(20, nodeHashMap.get("thumb0").get("top").value(), EPSILON);
+        assertEquals(20, nodeHashMap.get("thumb1").get("top").value(), EPSILON);
+
+        assertEquals(85, nodeHashMap.get("title0").get("top").value(), EPSILON);
+        assertEquals(85, nodeHashMap.get("title1").get("top").value(), EPSILON);
 
         assertEquals(210, nodeHashMap.get("thumb2").get("top").value(), EPSILON);
         assertEquals(210, nodeHashMap.get("thumb3").get("top").value(), EPSILON);
@@ -244,7 +319,30 @@ public class RealWorldTests {
         Iterator<Map.Entry<String, Variable>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Variable> pairs = it.next();
-            System.out.println(" " + pairs.getKey() + " = " + pairs.getValue().value());
+            System.out.println(" " + pairs.getKey() + " = " + pairs.getValue().value() + " (address:" + pairs.getValue().hashCode() + ")");
         }
     }
+
+    @Test
+    public void testGridX1000() throws ConstraintNotFound {
+
+        long nanoTime = System.nanoTime();
+        for (int i = 0; i < 1000; i++) {
+          testGridLayout();
+        }
+        System.out.println("testGridX1000 took " + (System.nanoTime() - nanoTime) / 1000000);
+    }
+
+    @Test
+    public void testGridWithEditsX1000() throws CassowaryError {
+
+        long nanoTime = System.nanoTime();
+
+        for (int i = 0; i < 1000; i++) {
+           testGridLayoutUsingEditVariables();
+        }
+        System.out.println("testGridWithEditsX1000 took " + (System.nanoTime() - nanoTime) / 1000000 + " ms");
+
+    }
+
 }
