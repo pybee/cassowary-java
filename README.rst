@@ -1,28 +1,35 @@
 cassowary-java
 ==============
 
-Cassowary-java is comprised of two parts:
-
-* A pure Java implementation of the `Cassowary constraint-solving algorithm`_.
-
-* An Android ``ViewGroup`` that uses Cassowary to perform the layout of widgets.
+Cassowary-java is a pure Java implementation of the `Cassowary constraint-solving algorithm`_.
 
 Cassowary is the algorithm that forms the core of the OS X and iOS visual
 layout mechanism.
 
 Quickstart
 ----------
+Gradle users
 
-To build ``cassowary-java``::
+Add the maven url to your project's ``build.gradle``
 
-    $ export ANDROIDSDK=<path to Android SDK directory>
-    $ make
+::
 
-This will produce 2 JAR files:
+    allprojects {
+        repositories {
+            jcenter()
+            maven {
+                url "https://raw.githubusercontent.com/alexbirkett/maven-repository/master/"
+            }
+        }
+    }
+    
+Add the dependency
 
-* ``Cassowary.jar``, containing just the Cassowary implementation
-* ``AndroidCassowary.jar``, containig all the contents of ``Cassowary.jar``,
-  plus the Android layout parts.
+:: 
+
+    dependencies {
+        compile "org.pybee:cassowary:1.0.0-SNAPSHOT"
+    }
 
 Community
 ---------
