@@ -53,6 +53,7 @@ public class PerformanceTests {
 
             Constraint constraint = ConstraintParser.parseConstraint(constraintString, variableResolver);
 
+            System.gc();
             long timeBefore = System.nanoTime();
 
             solver.addConstraint(constraint);
