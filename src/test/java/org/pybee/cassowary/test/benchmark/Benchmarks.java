@@ -1,6 +1,5 @@
-package org.pybee.cassowary.test;
+package org.pybee.cassowary.test.benchmark;
 
-import org.junit.Test;
 import org.pybee.cassowary.CassowaryError;
 import org.pybee.cassowary.Constraint;
 import org.pybee.cassowary.Expression;
@@ -13,10 +12,9 @@ import java.util.HashMap;
 /**
  * Created by alex on 27/11/2014.
  */
-public class PerformanceTests {
+public class Benchmarks {
 
-    @Test
-    public void testAddingLotsOfConstraints() throws CassowaryError {
+    public static void testAddingLotsOfConstraints() throws CassowaryError {
         SimplexSolver solver = new SimplexSolver();
         solver.setAutosolve(false);
 
@@ -64,7 +62,12 @@ public class PerformanceTests {
 
     }
 
-    private String getVariableName(int number) {
+    private static String getVariableName(int number) {
         return "variable" + number;
     }
+
+    public static void main(String [ ] args) throws CassowaryError {
+        testAddingLotsOfConstraints();
+    }
+
 }
