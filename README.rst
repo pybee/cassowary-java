@@ -31,6 +31,18 @@ Add the dependency
         compile "org.pybee:cassowary:1.0.0-SNAPSHOT"
     }
 
+
+Publishing cassowary-java to a maven repoisitory
+------------------------------------------------
+
+cassowary-java can be published to a maven repo using the following command
+
+:: 
+
+    ./gradlew publish -PmavenSnapshotsUrl=<url>  -PmavenUsername=<username> -PmavenPassword=<password>
+
+Where <url>, <username> and <password> should be substituted with the server url, username and password.
+
 Community
 ---------
 
