@@ -1,0 +1,44 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'org.pybee'
+version = '1.0.0-SNAPSHOT'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'cassowary'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username project.hasProperty('mavenUsername') ? mavenUsername : null
+                password project.hasProperty('mavenPassword') ? mavenPassword : null
+            }
+            url project.hasProperty('mavenSnapshotsUrl') ? mavenSnapshotsUrl : null
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
+
+dependencies {
+    compile "junit:junit:4.7"
+}
+
+allprojects {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
