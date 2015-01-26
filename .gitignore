@@ -12,3 +12,4 @@ distribute-*
 local
 .tox
 .gradle
+gradle.properties

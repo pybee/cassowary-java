@@ -1,44 +1,86 @@
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
+}
+
+
+allprojects {
+    apply plugin: 'idea'
+
+    group = 'org.pybee'
+    version = '0.0.1'
 }
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-group = 'org.pybee'
-version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.7'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId 'cassowary'
             from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
         }
-    }
-    repositories {
-        maven {
-            credentials {
-                username project.hasProperty('mavenUsername') ? mavenUsername : null
-                password project.hasProperty('mavenPassword') ? mavenPassword : null
-            }
-            url project.hasProperty('mavenSnapshotsUrl') ? mavenSnapshotsUrl : null
-        }
+
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
+bintray {
+    user = bintray_user
+    key = bintray_api_key
+
+    publications = ['mavenJava']
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+        repo = 'maven'
+        userOrg = 'pybee'
+        name = 'cassowary'
+        desc = 'A Java implementation of the Cassowary constraint solving algorithm.'
+        websiteUrl = 'http://pybee.org'
+        vcsUrl = 'https://github.com/pybee/cassowary-java'
+        licenses = ['BSD']
+        publish = true
+        version {
+            name = project.version
+        }
+    }
 }
 
-tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
-
-dependencies {
-    compile "junit:junit:4.7"
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
 }
 
-allprojects {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
-}
-
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }

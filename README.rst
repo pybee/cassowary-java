@@ -8,40 +8,39 @@ layout mechanism.
 
 Quickstart
 ----------
-Gradle users
 
-Add the maven url to your project's ``build.gradle``
+The easiest way to use Cassowary in you Java project is using Gradle.
+Just add the JCentre Maven repository url to your project's ``build.gradle``::
 
-::
-
-    allprojects {
-        repositories {
-            jcenter()
-            maven {
-                url "https://raw.githubusercontent.com/alexbirkett/maven-repository/master/"
-            }
-        }
+    repositories {
+        jcenter()
     }
-    
-Add the dependency
 
-:: 
+Then add the Cassowary dependency::
 
     dependencies {
-        compile "org.pybee:cassowary:1.0.0-SNAPSHOT"
+        compile "org.pybee:cassowary:0.0.1"
     }
 
 
-Publishing cassowary-java to a maven repoisitory
-------------------------------------------------
+Building cassowary-java
+-----------------------
 
-cassowary-java can be published to a maven repo using the following command
+Gradle can also be used to manage the build and release of Cassowary-java.
+To build the Cassowary release jar file, run::
 
-:: 
+    ./gradlew build
 
-    ./gradlew publish -PmavenSnapshotsUrl=<url>  -PmavenUsername=<username> -PmavenPassword=<password>
+This will also run the test suite. Assuming everything works, you can publish
+to a Maven repository. Make sure you have a `gradle.properties` file in the
+root directory of the project; it should contain the following::
 
-Where <url>, <username> and <password> should be substituted with the server url, username and password.
+    bintray_user=<your bintray username>
+    bintray_api_key=<your bintray API key>
+
+If this file is correct, you can publish using::
+
+    ./gradlew bintrayUpload
 
 Community
 ---------
