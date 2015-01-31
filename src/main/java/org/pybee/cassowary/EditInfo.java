@@ -9,12 +9,12 @@ package org.pybee.cassowary;
 // constants from the smalltalk version of the code.
 class EditInfo {
     private AbstractConstraint _cn;
-    private SlackVariable _clvEditPlus;
-    private SlackVariable _clvEditMinus;
+    private AbstractVariable _clvEditPlus;
+    private AbstractVariable _clvEditMinus;
     private double _prevEditConstant;
     private int _i;
 
-    public EditInfo(AbstractConstraint cn, SlackVariable eplus, SlackVariable eminus, double prevEditConstant, int i)
+    public EditInfo(AbstractConstraint cn, AbstractVariable eplus, AbstractVariable eminus, double prevEditConstant, int i)
     {
         _cn = cn;
         _clvEditPlus = eplus;
@@ -33,12 +33,12 @@ class EditInfo {
         return _cn;
     }
 
-    public SlackVariable clvEditPlus()
+    public AbstractVariable clvEditPlus()
     {
         return _clvEditPlus;
     }
 
-    public SlackVariable clvEditMinus()
+    public AbstractVariable clvEditMinus()
     {
         return _clvEditMinus;
     }

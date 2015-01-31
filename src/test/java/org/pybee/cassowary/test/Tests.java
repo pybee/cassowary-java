@@ -215,8 +215,8 @@ public class Tests {
 
         solver.addEditVar(x);
         solver.addEditVar(y);
-        solver.beginEdit();
 
+        solver.beginEdit();
         solver.suggestValue(x, 10);
         solver.suggestValue(y, 20);
         solver.resolve();
@@ -227,11 +227,10 @@ public class Tests {
         assertEquals(0, w.value(), EPSILON);
         assertEquals(0, h.value(), EPSILON);
 
-
         solver.addEditVar(w);
         solver.addEditVar(h);
-        solver.beginEdit();
 
+        solver.beginEdit();
         solver.suggestValue(w, 30);
         solver.suggestValue(h, 40);
         solver.endEdit();

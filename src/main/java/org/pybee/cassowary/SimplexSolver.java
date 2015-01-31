@@ -139,8 +139,8 @@ public class SimplexSolver extends Tableau
         {
             int i = _editVarMap.size();
             EditConstraint cnEdit = (EditConstraint) cn;
-            SlackVariable clvEplus = (SlackVariable) eplus_eminus.elementAt(0);
-            SlackVariable clvEminus = (SlackVariable) eplus_eminus.elementAt(1);
+            AbstractVariable clvEplus = (AbstractVariable) eplus_eminus.elementAt(0);
+            AbstractVariable clvEminus = (AbstractVariable) eplus_eminus.elementAt(1);
             _editVarMap.put(
                 cnEdit.variable(),
                 new EditInfo(cnEdit, clvEplus, clvEminus, prevEConstant.doubleValue(), i)
@@ -419,12 +419,12 @@ public class SimplexSolver extends Tableau
         }
         else if (cn.isEditConstraint())
         {
-            assert eVars != null;
+            // assert eVars != null;
             EditConstraint cnEdit = (EditConstraint) cn;
             Variable clv = cnEdit.variable();
             EditInfo cei = _editVarMap.get(clv);
-            SlackVariable clvEditMinus = cei.clvEditMinus();
-            // SlackVariable clvEditPlus = cei.ClvEditPlus();
+            AbstractVariable clvEditMinus = cei.clvEditMinus();
+            // Variable clvEditPlus = cei.ClvEditPlus();
             // the clvEditPlus is a marker variable that is removed elsewhere
             removeColumn(clvEditMinus);
             _editVarMap.remove(clv);
@@ -521,8 +521,8 @@ public class SimplexSolver extends Tableau
             throw new CassowaryError();
         }
         int i = cei.index();
-        SlackVariable clvEditPlus = cei.clvEditPlus();
-        SlackVariable clvEditMinus = cei.clvEditMinus();
+        AbstractVariable clvEditPlus = cei.clvEditPlus();
+        AbstractVariable clvEditMinus = cei.clvEditMinus();
         double delta = x - cei.prevEditConstant();
         cei.setPrevEditConstant(x);
         deltaEditConstant(delta, clvEditPlus, clvEditMinus);
@@ -880,11 +880,13 @@ public class SimplexSolver extends Tableau
             throws InternalError
     {
         final Expression zRow = rowExpression(_objective);
-        Iterator<AbstractVariable> elements = _infeasibleRows.iterator();
-        while (elements.hasNext())
+
+        while (_infeasibleRows.size() > 0)
         {
+            Iterator<AbstractVariable> elements = _infeasibleRows.iterator();
             AbstractVariable exitVar = elements.next();
             _infeasibleRows.remove(exitVar);
+
             AbstractVariable entryVar = null;
             Expression expr = rowExpression(exitVar);
             if (expr != null )
@@ -971,6 +973,8 @@ public class SimplexSolver extends Tableau
             {
                 ++_dummyCounter;
                 dummyVar = new DummyVariable(_dummyCounter, "d");
+                eplus_eminus.addElement(dummyVar);
+                eplus_eminus.addElement(dummyVar);
                 expr.setVariable(dummyVar, 1.0);
                 _markerVars.put(cn, dummyVar);
             }
