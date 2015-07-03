@@ -28,7 +28,7 @@ public abstract class AbstractConstraint
         _weight = 1.0;
     }
 
-    public abstract Expression expression();
+    public abstract Expression getExpression();
 
     public boolean isEditConstraint()
     {
@@ -50,19 +50,19 @@ public abstract class AbstractConstraint
         return false;
     }
 
-    public Strength strength()
+    public Strength getStrength()
     {
         return _strength;
     }
 
-    public double weight()
+    public double getWeight()
     {
         return _weight;
     }
 
     public String toString()
     {
-        return _strength + " {" + weight() + "} (" + expression();
+        return _strength + " {" + getWeight() + "} (" + getExpression();
     }
 
     public void setAttachedObject(Object o)

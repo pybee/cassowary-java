@@ -28,7 +28,7 @@ public abstract class AbstractVariable
         iVariableNumber++;
     }
 
-    public String name()
+    public String getName()
     {
         return _name;
     }

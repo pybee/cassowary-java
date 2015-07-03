@@ -15,7 +15,7 @@ class ObjectiveVariable extends AbstractVariable
 
     public String toString()
     {
-        return "[" + name() + ":obj]";
+        return "[" + getName() + ":obj]";
     }
 
     public boolean isExternal()

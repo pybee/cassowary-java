@@ -148,11 +148,11 @@ public class Expression
     // expression.
     public final Expression addExpression(Expression expr, double n, AbstractVariable subject, Tableau solver)
     {
-        incrementConstant(n * expr.constant());
+        incrementConstant(n * expr.getConstant());
 
-        for (AbstractVariable clv: expr.terms().keySet())
+        for (AbstractVariable clv: expr.getTerms().keySet())
         {
-            double coeff = expr.terms().get(clv);
+            double coeff = expr.getTerms().get(clv);
             addVariable(clv, coeff*n, subject, solver);
         }
         return this;
@@ -161,11 +161,11 @@ public class Expression
     // Add n*expr to this expression from another expression expr.
     public final Expression addExpression(Expression expr, double n)
     {
-        incrementConstant(n * expr.constant());
+        incrementConstant(n * expr.getConstant());
 
-        for (AbstractVariable clv: expr.terms().keySet())
+        for (AbstractVariable clv: expr.getTerms().keySet())
         {
-            double coeff = expr.terms().get(clv);
+            double coeff = expr.getTerms().get(clv);
             addVariable(clv, coeff*n);
         }
         return this;
@@ -256,7 +256,7 @@ public class Expression
     {
         if (isConstant())
         {
-            throw new InternalError("anyPivotableVariable called on a constant");
+            throw new InternalError("anyPivotableVariable called on a getConstant");
         }
 
         for (AbstractVariable clv: _terms.keySet())
@@ -281,11 +281,11 @@ public class Expression
     public final void substituteOut(AbstractVariable var, Expression expr, AbstractVariable subject, Tableau solver)
     {
         double multiplier = ((Double) _terms.remove(var)).doubleValue();
-        incrementConstant(multiplier * expr.constant());
+        incrementConstant(multiplier * expr.getConstant());
 
-        for (AbstractVariable clv: expr.terms().keySet())
+        for (AbstractVariable clv: expr.getTerms().keySet())
         {
-            double coeff = ((Double) expr.terms().get(clv)).doubleValue();
+            double coeff = ((Double) expr.getTerms().get(clv)).doubleValue();
             Double d_old_coeff = (Double) _terms.get(clv);
             if (d_old_coeff != null)
             {
@@ -370,17 +370,17 @@ public class Expression
         }
     }
 
-    public final double constant()
+    public final double getConstant()
     {
         return _constant;
     }
 
-    public final void set_constant(double c)
+    public final void setConstant(double c)
     {
         _constant = c;
     }
 
-    public final Hashtable<AbstractVariable, Double> terms()
+    public final Hashtable<AbstractVariable, Double> getTerms()
     {
         return _terms;
     }

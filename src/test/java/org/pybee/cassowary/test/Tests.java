@@ -1,9 +1,6 @@
 package org.pybee.cassowary.test;
 
-import java.util.Random;
-
 import org.pybee.cassowary.*;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +18,7 @@ public class Tests {
         Constraint eq = new Constraint(x, Constraint.Operator.EQ, new Expression(y));
         //ClLinearEquation eq = new ClLinearEquation(x, new ClLinearExpression(y));
         solver.addConstraint(eq);
-        assertEquals(x.value(), y.value(), EPSILON);
+        assertEquals(x.getValue(), y.getValue(), EPSILON);
     }
 
     @Test
@@ -32,8 +29,8 @@ public class Tests {
 
         solver.addStay(x);
         solver.addStay(y);
-        assertEquals(5, x.value(), EPSILON);
-        assertEquals(10, y.value(), EPSILON);
+        assertEquals(5, x.getValue(), EPSILON);
+        assertEquals(10, y.getValue(), EPSILON);
     }
 
 
@@ -50,26 +47,26 @@ public class Tests {
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
 
         solver.removeConstraint(c10);
-        assertEquals(20, x.value(), EPSILON);
+        assertEquals(20, x.getValue(), EPSILON);
 
         solver.removeConstraint(c20);
-        assertEquals(100, x.value(), EPSILON);
+        assertEquals(100, x.getValue(), EPSILON);
 
         Constraint c10again = new Constraint(x, Constraint.Operator.LEQ, 10.0);
 
         solver.addConstraint(c10);
         solver.addConstraint(c10again);
 
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
 
         solver.removeConstraint(c10);
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
 
         solver.removeConstraint(c10again);
-        assertEquals(100, x.value(), EPSILON);
+        assertEquals(100, x.getValue(), EPSILON);
     }
 
 
@@ -89,25 +86,25 @@ public class Tests {
         solver.addConstraint(c10);
         solver.addConstraint(c20);
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(120, y.getValue(), EPSILON);
 
         solver.removeConstraint(c10);
-        assertEquals(20, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(20, x.getValue(), EPSILON);
+        assertEquals(120, y.getValue(), EPSILON);
 
         Constraint cxy = new Constraint(x.times(2.0), Constraint.Operator.EQ, y);
         solver.addConstraint(cxy);
-        assertEquals(20, x.value(), EPSILON);
-        assertEquals(40, y.value(), EPSILON);
+        assertEquals(20, x.getValue(), EPSILON);
+        assertEquals(40, y.getValue(), EPSILON);
 
         solver.removeConstraint(c20);
-        assertEquals(60, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(60, x.getValue(), EPSILON);
+        assertEquals(120, y.getValue(), EPSILON);
 
         solver.removeConstraint(cxy);
-        assertEquals(100, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(100, x.getValue(), EPSILON);
+        assertEquals(120, y.getValue(), EPSILON);
     }
 
     @Test
@@ -121,12 +118,12 @@ public class Tests {
         solver.addConstraint(new Constraint(x, Constraint.Operator.EQ, 10.0, Strength.WEAK));
         solver.addConstraint(new Constraint(y, Constraint.Operator.EQ, 10.0, Strength.WEAK));
 
-        if (Math.abs(x.value() - 10.0) < EPSILON) {
-            assertEquals(10, x.value(), EPSILON);
-            assertEquals(13, y.value(), EPSILON);
+        if (Math.abs(x.getValue() - 10.0) < EPSILON) {
+            assertEquals(10, x.getValue(), EPSILON);
+            assertEquals(13, y.getValue(), EPSILON);
         } else {
-            assertEquals(7, x.value(), EPSILON);
-            assertEquals(10, y.value(), EPSILON);
+            assertEquals(7, x.getValue(), EPSILON);
+            assertEquals(10, y.getValue(), EPSILON);
         }
     }
 
@@ -170,10 +167,10 @@ public class Tests {
         solver.suggestValue(y, 20);
         solver.resolve();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(0, w.value(), EPSILON);
-        assertEquals(0, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(0, w.getValue(), EPSILON);
+        assertEquals(0, h.getValue(), EPSILON);
 
 
         solver.addEditVar(w);
@@ -184,18 +181,18 @@ public class Tests {
         solver.suggestValue(h, 40);
         solver.endEdit();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
 
         solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
 
 
-        assertEquals(50, x.value(), EPSILON);
-        assertEquals(60, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(50, x.getValue(), EPSILON);
+        assertEquals(60, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
     }
 
 
@@ -222,10 +219,10 @@ public class Tests {
         solver.resolve();
         solver.solve();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(0, w.value(), EPSILON);
-        assertEquals(0, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(0, w.getValue(), EPSILON);
+        assertEquals(0, h.getValue(), EPSILON);
 
         solver.addEditVar(w);
         solver.addEditVar(h);
@@ -237,18 +234,18 @@ public class Tests {
 
         solver.solve();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
 
         solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
         solver.solve();
 
-        assertEquals(50, x.value(), EPSILON);
-        assertEquals(60, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(50, x.getValue(), EPSILON);
+        assertEquals(60, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
     }
 
     @Test
@@ -273,10 +270,10 @@ public class Tests {
         solver.resolve();
         solver.solve();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(0, w.value(), EPSILON);
-        assertEquals(0, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(0, w.getValue(), EPSILON);
+        assertEquals(0, h.getValue(), EPSILON);
 
 
         solver.addEditVar(w, Strength.REQUIRED);
@@ -289,18 +286,18 @@ public class Tests {
 
         solver.solve();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(20, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(10, x.getValue(), EPSILON);
+        assertEquals(20, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
 
         solver.suggestValue(x, 50).suggestValue(y, 60).endEdit();
         solver.solve();
 
-        assertEquals(50, x.value(), EPSILON);
-        assertEquals(60, y.value(), EPSILON);
-        assertEquals(30, w.value(), EPSILON);
-        assertEquals(40, h.value(), EPSILON);
+        assertEquals(50, x.getValue(), EPSILON);
+        assertEquals(60, y.getValue(), EPSILON);
+        assertEquals(30, w.getValue(), EPSILON);
+        assertEquals(40, h.getValue(), EPSILON);
     }
 
     @Test(expected = RequiredFailure.class)

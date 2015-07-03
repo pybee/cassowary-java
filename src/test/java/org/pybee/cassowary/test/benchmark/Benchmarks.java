@@ -63,7 +63,7 @@ public class Benchmarks {
     }
 
     private static String getVariableName(int number) {
-        return "variable" + number;
+        return "getVariable" + number;
     }
 
     public static void main(String [ ] args) throws CassowaryError {

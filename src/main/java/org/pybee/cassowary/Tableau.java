@@ -127,7 +127,7 @@ class Tableau
         // have that variable in their expression
         _rows.put(var, expr);
 
-        for (AbstractVariable clv: expr.terms().keySet())
+        for (AbstractVariable clv: expr.getTerms().keySet())
         {
             insertColVar(clv, var);
             if (clv.isExternal())
@@ -152,7 +152,7 @@ class Tableau
             for (AbstractVariable clv: rows)
             {
                 Expression expr = _rows.get(clv);
-                expr.terms().remove(var);
+                expr.getTerms().remove(var);
             }
         }
 
@@ -174,7 +174,7 @@ class Tableau
         // For each variable in this expression, update
         // the column mapping and remove the variable from the list
         // of rows it is known to be in
-        for (AbstractVariable clv: expr.terms().keySet()) {
+        for (AbstractVariable clv: expr.getTerms().keySet()) {
             Set varset = (Set) _columns.get(clv);
             if (varset != null)
             {
@@ -200,7 +200,7 @@ class Tableau
         {
             Expression row = _rows.get(v);
             row.substituteOut(oldVar, expr, v, this);
-            if (v.isRestricted() && row.constant() < 0.0)
+            if (v.isRestricted() && row.getConstant() < 0.0)
             {
                 _infeasibleRows.add(v);
             }

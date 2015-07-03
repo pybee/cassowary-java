@@ -142,7 +142,7 @@ public class SimplexSolver extends Tableau
             AbstractVariable clvEplus = (AbstractVariable) eplus_eminus.elementAt(0);
             AbstractVariable clvEminus = (AbstractVariable) eplus_eminus.elementAt(1);
             _editVarMap.put(
-                cnEdit.variable(),
+                cnEdit.getVariable(),
                 new EditInfo(cnEdit, clvEplus, clvEminus, prevEConstant.doubleValue(), i)
             );
         }
@@ -200,7 +200,7 @@ public class SimplexSolver extends Tableau
             throws InternalError, ConstraintNotFound
     {
         EditInfo cei = _editVarMap.get(v);
-        AbstractConstraint cn = cei.constraint();
+        AbstractConstraint cn = cei.getConstraint();
         removeConstraint(cn);
         return this;
     }
@@ -252,7 +252,7 @@ public class SimplexSolver extends Tableau
             {
                 Variable v = e.nextElement();
                 EditInfo cei = _editVarMap.get(v);
-                if (cei.index() >= n)
+                if (cei.getIndex() >= n)
                 {
                     removeEditVar(v);
                 }
@@ -311,12 +311,12 @@ public class SimplexSolver extends Tableau
                 final Expression expr = rowExpression(clv);
                 if (expr == null)
                 {
-                    zRow.addVariable(clv, -cn.weight() * cn.strength().value(),
+                    zRow.addVariable(clv, -cn.getWeight() * cn.getStrength().getValue(),
                     _objective, this);
                 }
                 else
                 { // the error variable was in the basis
-                    zRow.addExpression(expr, -cn.weight() * cn.strength().value(),
+                    zRow.addExpression(expr, -cn.getWeight() * cn.getStrength().getValue(),
                     _objective, this);
                 }
             }
@@ -342,7 +342,7 @@ public class SimplexSolver extends Tableau
                     double coeff = expr.coefficientFor(marker);
                     if (coeff < 0.0)
                     {
-                        double r = -expr.constant() / coeff;
+                        double r = -expr.getConstant() / coeff;
                         if (exitVar == null || r < minRatio)
                         {
                             minRatio = r;
@@ -359,7 +359,7 @@ public class SimplexSolver extends Tableau
                     {
                         final Expression expr = rowExpression(v);
                         double coeff = expr.coefficientFor(marker);
-                        double r = expr.constant() / coeff;
+                        double r = expr.getConstant() / coeff;
                         if (exitVar == null || r < minRatio)
                         {
                             minRatio = r;
@@ -421,9 +421,9 @@ public class SimplexSolver extends Tableau
         {
             // assert eVars != null;
             EditConstraint cnEdit = (EditConstraint) cn;
-            Variable clv = cnEdit.variable();
+            Variable clv = cnEdit.getVariable();
             EditInfo cei = _editVarMap.get(clv);
-            AbstractVariable clvEditMinus = cei.clvEditMinus();
+            AbstractVariable clvEditMinus = cei.getClvEditMinus();
             // Variable clvEditPlus = cei.ClvEditPlus();
             // the clvEditPlus is a marker variable that is removed elsewhere
             removeColumn(clvEditMinus);
@@ -469,7 +469,7 @@ public class SimplexSolver extends Tableau
         for (Variable v: _editVarMap.keySet())
         {
             EditInfo cei = _editVarMap.get(v);
-            int i = cei.index();
+            int i = cei.getIndex();
             try
             {
                 if (i < newEditConstants.size())
@@ -520,10 +520,10 @@ public class SimplexSolver extends Tableau
             System.err.println("suggestValue for variable " + v + ", but var is not an edit variable\n");
             throw new CassowaryError();
         }
-        int i = cei.index();
-        AbstractVariable clvEditPlus = cei.clvEditPlus();
-        AbstractVariable clvEditMinus = cei.clvEditMinus();
-        double delta = x - cei.prevEditConstant();
+        int i = cei.getIndex();
+        AbstractVariable clvEditPlus = cei.getClvEditPlus();
+        AbstractVariable clvEditMinus = cei.getClvEditMinus();
+        double delta = x - cei.getPrevEditConstant();
         cei.setPrevEditConstant(x);
         deltaEditConstant(delta, clvEditPlus, clvEditMinus);
         return this;
@@ -569,11 +569,11 @@ public class SimplexSolver extends Tableau
             throws InternalError
     {
         if (!FContainsVariable(v)) {
-            v.change_value(n);
+            v.changeValue(n);
             return this;
         }
 
-        if (!Util.approx(n, v.value())) {
+        if (!Util.approx(n, v.getValue())) {
             addEditVar(v);
             beginEdit();
             try {
@@ -672,7 +672,7 @@ public class SimplexSolver extends Tableau
 
         Expression azTableauRow = rowExpression(az);
 
-        if (!Util.approx(azTableauRow.constant(), 0.0))
+        if (!Util.approx(azTableauRow.getConstant(), 0.0))
         {
             removeRow(az);
             removeColumn(av);
@@ -748,7 +748,7 @@ public class SimplexSolver extends Tableau
         boolean foundUnrestricted = false;
         boolean foundNewRestricted = false;
 
-        final Hashtable<AbstractVariable, Double> terms = expr.terms();
+        final Hashtable<AbstractVariable, Double> terms = expr.getTerms();
 
         for (AbstractVariable v: terms.keySet())
         {
@@ -808,7 +808,7 @@ public class SimplexSolver extends Tableau
             }
         }
 
-        if (!Util.approx(expr.constant(), 0.0))
+        if (!Util.approx(expr.getConstant(), 0.0))
         {
             throw new RequiredFailure();
         }
@@ -843,7 +843,7 @@ public class SimplexSolver extends Tableau
         {
             exprPlus.incrementConstant(delta);
 
-            if (exprPlus.constant() < 0.0)
+            if (exprPlus.getConstant() < 0.0)
             {
                 _infeasibleRows.add(plusErrorVar);
             }
@@ -854,7 +854,7 @@ public class SimplexSolver extends Tableau
         if (exprMinus != null)
         {
             exprMinus.incrementConstant(-delta);
-            if (exprMinus.constant() < 0.0)
+            if (exprMinus.getConstant() < 0.0)
             {
                 _infeasibleRows.add(minusErrorVar);
             }
@@ -867,7 +867,7 @@ public class SimplexSolver extends Tableau
             //assert(expr != null, "expr != null" );
             final double c = expr.coefficientFor(minusErrorVar);
             expr.incrementConstant(c * delta);
-            if (basicVar.isRestricted() && expr.constant() < 0.0)
+            if (basicVar.isRestricted() && expr.getConstant() < 0.0)
             {
                 _infeasibleRows.add(basicVar);
             }
@@ -891,11 +891,11 @@ public class SimplexSolver extends Tableau
             Expression expr = rowExpression(exitVar);
             if (expr != null )
             {
-                if (expr.constant() < 0.0)
+                if (expr.getConstant() < 0.0)
                 {
                     double ratio = Double.MAX_VALUE;
                     double r;
-                    Hashtable<AbstractVariable, Double> terms = expr.terms();
+                    Hashtable<AbstractVariable, Double> terms = expr.getTerms();
                     for (AbstractVariable v: terms.keySet())
                     {
                         double c = terms.get(v).doubleValue();
@@ -927,13 +927,13 @@ public class SimplexSolver extends Tableau
     // appropriate weight in the objective function.
     protected final Expression newExpression(AbstractConstraint cn, Vector eplus_eminus, Double prevEConstant)
     {
-        final Expression cnExpr = cn.expression();
-        Expression expr = new Expression(cnExpr.constant());
+        final Expression cnExpr = cn.getExpression();
+        Expression expr = new Expression(cnExpr.getConstant());
         SlackVariable slackVar = new SlackVariable();
         DummyVariable dummyVar = new DummyVariable();
         SlackVariable eminus = new SlackVariable();
         SlackVariable eplus = new SlackVariable();
-        final Hashtable<AbstractVariable, Double> cnTerms = cnExpr.terms();
+        final Hashtable<AbstractVariable, Double> cnTerms = cnExpr.getTerms();
         for (AbstractVariable v: cnTerms.keySet())
         {
             double c = cnTerms.get(v).doubleValue();
@@ -960,7 +960,7 @@ public class SimplexSolver extends Tableau
                 eminus = new SlackVariable(_slackCounter, "em");
                 expr.setVariable(eminus, 1.0);
                 Expression zRow = rowExpression(_objective);
-                double swCoeff = cn.strength().value() * cn.weight();
+                double swCoeff = cn.getStrength().getValue() * cn.getWeight();
                 zRow.setVariable(eminus, swCoeff);
                 insertErrorVar(cn, eminus);
                 noteAddedVariable(eminus, _objective);
@@ -988,7 +988,7 @@ public class SimplexSolver extends Tableau
                 expr.setVariable(eminus, 1.0);
                 _markerVars.put(cn, eplus);
                 Expression zRow = rowExpression(_objective);
-                double swCoeff = cn.strength().value() * cn.weight();
+                double swCoeff = cn.getStrength().getValue() * cn.getWeight();
                 zRow.setVariable(eplus, swCoeff);
                 noteAddedVariable(eplus, _objective);
                 zRow.setVariable(eminus, swCoeff);
@@ -1008,12 +1008,12 @@ public class SimplexSolver extends Tableau
                     // setValue call; since prevEConstant is passed in by reference,
                     // this means the value should be reflected outside this method.
                     // Does this actually matter?
-                    prevEConstant = new Double(cnExpr.constant());
+                    prevEConstant = new Double(cnExpr.getConstant());
                 }
             }
         }
 
-        if (expr.constant() < 0)
+        if (expr.getConstant() < 0)
         {
            expr.multiplyMe(-1);
         }
@@ -1033,7 +1033,7 @@ public class SimplexSolver extends Tableau
         while (true)
         {
             double objectiveCoeff = 0;
-            Hashtable<AbstractVariable, Double> terms = zRow.terms();
+            Hashtable<AbstractVariable, Double> terms = zRow.getTerms();
             for (AbstractVariable v: terms.keySet()) {
                 double c = ((Double) terms.get(v)).doubleValue();
                 if (v.isPivotable() && c < objectiveCoeff)
@@ -1057,7 +1057,7 @@ public class SimplexSolver extends Tableau
                     double coeff = expr.coefficientFor(entryVar);
                     if (coeff < 0.0)
                     {
-                        r = - expr.constant() / coeff;
+                        r = - expr.getConstant() / coeff;
                         if (r < minRatio)
                         {
                             minRatio = r;
@@ -1113,7 +1113,7 @@ public class SimplexSolver extends Tableau
             }
             if (expr != null)
             {
-                expr.set_constant(0.0);
+                expr.setConstant(0.0);
             }
         }
     }
@@ -1137,14 +1137,14 @@ public class SimplexSolver extends Tableau
                 System.err.println("Error: variable" + v + " in _externalParametricVars is basic");
                 continue;
             }
-            v.change_value(0.0);
+            v.changeValue(0.0);
         }
 
         for (AbstractVariable av: _externalRows)
         {
             Variable v = (Variable) av;
             Expression expr = rowExpression(v);
-            v.change_value(expr.constant());
+            v.changeValue(expr.getConstant());
         }
 
         _fNeedsSolving = false;
