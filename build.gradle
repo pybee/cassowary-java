@@ -58,8 +58,8 @@ publishing {
 }
 
 bintray {
-    user = bintray_user
-    key = bintray_api_key
+    user = hasProperty('bintray_user') ? bintray_user : ''
+    key = key = hasProperty('bintray_api_key') ? bintray_api_key : ''
 
     publications = ['mavenJava']
     dryRun = false //Whether to run this as dry-run, without deploying
