@@ -11,6 +11,7 @@ public class Variable extends AbstractVariable
 
     private Object _attachedObject;
 
+    private VariableObserver _observer;
 
     public Variable(String name, double value)
     {
@@ -99,6 +100,9 @@ public class Variable extends AbstractVariable
     public void change_value(double value)
     {
         _value = value;
+        if (_observer != null) {
+            _observer.onVariableChanged(this);
+        }
     }
 
     public void setAttachedObject(Object o)
@@ -135,5 +139,13 @@ public class Variable extends AbstractVariable
     public Expression plus(double val)
     {
         return new Expression(this).plus(new Expression(val));
+    }
+
+    public VariableObserver getObserver() {
+        return _observer;
+    }
+
+    public void setObserver(VariableObserver variableObserver) {
+        this._observer = variableObserver;
     }
 }
