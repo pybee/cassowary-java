@@ -17,7 +17,7 @@ class DummyVariable extends AbstractVariable
 
     public String toString()
     {
-        return "[" + name() + ":dummy]";
+        return "[" + getName() + ":dummy]";
     }
 
     public boolean isDummy()

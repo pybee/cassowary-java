@@ -14,7 +14,7 @@ public enum Strength
         this._value = value;
     }
 
-    public int value() {
+    public int getValue() {
         return _value;
     }
 

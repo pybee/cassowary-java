@@ -77,17 +77,17 @@ public class Variable extends AbstractVariable
 
     public String toString()
     {
-        return "[" + name() + ":" + _value + "]";
+        return "[" + getName() + ":" + _value + "]";
     }
 
     // change the value held -- should *not* use this if the variable is
     // in a solver -- instead use addEditVar() and suggestValue() interface
-    public final double value()
+    public final double getValue()
     {
         return _value;
     }
 
-    public final void set_value(double value)
+    public final void setValue(double value)
     {
         _value = value;
     }
@@ -96,7 +96,7 @@ public class Variable extends AbstractVariable
     // done when the value is changed by the solver
     // may be called when the value hasn't actually changed -- just
     // means the solver is setting the external variable
-    public void change_value(double value)
+    public void changeValue(double value)
     {
         _value = value;
     }

@@ -23,27 +23,27 @@ class EditInfo {
         _i = i;
     }
 
-    public int index()
+    public int getIndex()
     {
         return _i;
     }
 
-    public AbstractConstraint constraint()
+    public AbstractConstraint getConstraint()
     {
         return _cn;
     }
 
-    public AbstractVariable clvEditPlus()
+    public AbstractVariable getClvEditPlus()
     {
         return _clvEditPlus;
     }
 
-    public AbstractVariable clvEditMinus()
+    public AbstractVariable getClvEditMinus()
     {
         return _clvEditMinus;
     }
 
-    public double prevEditConstant()
+    public double getPrevEditConstant()
     {
         return _prevEditConstant;
     }

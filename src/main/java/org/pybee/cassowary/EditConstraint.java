@@ -12,7 +12,7 @@ public class EditConstraint extends AbstractConstraint
     {
         super(strength, weight);
         _variable = var;
-        _expression = new Expression(_variable, -1.0, _variable.value());
+        _expression = new Expression(_variable, -1.0, _variable.getValue());
     }
 
     public EditConstraint(Variable var, Strength strength)
@@ -26,12 +26,12 @@ public class EditConstraint extends AbstractConstraint
         _variable = var;
     }
 
-    public Variable variable()
+    public Variable getVariable()
     {
         return _variable;
     }
 
-    public Expression expression()
+    public Expression getExpression()
     {
         return _expression;
     }

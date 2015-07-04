@@ -211,23 +211,23 @@ public class RealWorldTests {
 
         solver.solve();
 
-        assertEquals(20, nodeHashMap.get("thumb0").get("top").value(), EPSILON);
-        assertEquals(20, nodeHashMap.get("thumb1").get("top").value(), EPSILON);
+        assertEquals(20, nodeHashMap.get("thumb0").get("top").getValue(), EPSILON);
+        assertEquals(20, nodeHashMap.get("thumb1").get("top").getValue(), EPSILON);
 
-        assertEquals(85, nodeHashMap.get("title0").get("top").value(), EPSILON);
-        assertEquals(85, nodeHashMap.get("title1").get("top").value(), EPSILON);
+        assertEquals(85, nodeHashMap.get("title0").get("top").getValue(), EPSILON);
+        assertEquals(85, nodeHashMap.get("title1").get("top").getValue(), EPSILON);
 
-        assertEquals(210, nodeHashMap.get("thumb2").get("top").value(), EPSILON);
-        assertEquals(210, nodeHashMap.get("thumb3").get("top").value(), EPSILON);
+        assertEquals(210, nodeHashMap.get("thumb2").get("top").getValue(), EPSILON);
+        assertEquals(210, nodeHashMap.get("thumb3").get("top").getValue(), EPSILON);
 
-        assertEquals(275, nodeHashMap.get("title2").get("top").value(), EPSILON);
-        assertEquals(275, nodeHashMap.get("title3").get("top").value(), EPSILON);
+        assertEquals(275, nodeHashMap.get("title2").get("top").getValue(), EPSILON);
+        assertEquals(275, nodeHashMap.get("title3").get("top").getValue(), EPSILON);
 
-        assertEquals(420, nodeHashMap.get("thumb4").get("top").value(), EPSILON);
-        assertEquals(420, nodeHashMap.get("thumb5").get("top").value(), EPSILON);
+        assertEquals(420, nodeHashMap.get("thumb4").get("top").getValue(), EPSILON);
+        assertEquals(420, nodeHashMap.get("thumb5").get("top").getValue(), EPSILON);
 
-        assertEquals(485, nodeHashMap.get("title4").get("top").value(), EPSILON);
-        assertEquals(485, nodeHashMap.get("title5").get("top").value(), EPSILON);
+        assertEquals(485, nodeHashMap.get("title4").get("top").getValue(), EPSILON);
+        assertEquals(485, nodeHashMap.get("title5").get("top").getValue(), EPSILON);
 
     }
 
@@ -286,23 +286,23 @@ public class RealWorldTests {
 
         solver.solve();
 
-        assertEquals(20, nodeHashMap.get("thumb0").get("top").value(), EPSILON);
-        assertEquals(20, nodeHashMap.get("thumb1").get("top").value(), EPSILON);
+        assertEquals(20, nodeHashMap.get("thumb0").get("top").getValue(), EPSILON);
+        assertEquals(20, nodeHashMap.get("thumb1").get("top").getValue(), EPSILON);
 
-        assertEquals(85, nodeHashMap.get("title0").get("top").value(), EPSILON);
-        assertEquals(85, nodeHashMap.get("title1").get("top").value(), EPSILON);
+        assertEquals(85, nodeHashMap.get("title0").get("top").getValue(), EPSILON);
+        assertEquals(85, nodeHashMap.get("title1").get("top").getValue(), EPSILON);
 
-        assertEquals(210, nodeHashMap.get("thumb2").get("top").value(), EPSILON);
-        assertEquals(210, nodeHashMap.get("thumb3").get("top").value(), EPSILON);
+        assertEquals(210, nodeHashMap.get("thumb2").get("top").getValue(), EPSILON);
+        assertEquals(210, nodeHashMap.get("thumb3").get("top").getValue(), EPSILON);
 
-        assertEquals(275, nodeHashMap.get("title2").get("top").value(), EPSILON);
-        assertEquals(275, nodeHashMap.get("title3").get("top").value(), EPSILON);
+        assertEquals(275, nodeHashMap.get("title2").get("top").getValue(), EPSILON);
+        assertEquals(275, nodeHashMap.get("title3").get("top").getValue(), EPSILON);
 
-        assertEquals(420, nodeHashMap.get("thumb4").get("top").value(), EPSILON);
-        assertEquals(420, nodeHashMap.get("thumb5").get("top").value(), EPSILON);
+        assertEquals(420, nodeHashMap.get("thumb4").get("top").getValue(), EPSILON);
+        assertEquals(420, nodeHashMap.get("thumb5").get("top").getValue(), EPSILON);
 
-        assertEquals(485, nodeHashMap.get("title4").get("top").value(), EPSILON);
-        assertEquals(485, nodeHashMap.get("title5").get("top").value(), EPSILON);
+        assertEquals(485, nodeHashMap.get("title4").get("top").getValue(), EPSILON);
+        assertEquals(485, nodeHashMap.get("title5").get("top").getValue(), EPSILON);
 
     }
 
@@ -319,7 +319,7 @@ public class RealWorldTests {
         Iterator<Map.Entry<String, Variable>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Variable> pairs = it.next();
-            System.out.println(" " + pairs.getKey() + " = " + pairs.getValue().value() + " (address:" + pairs.getValue().hashCode() + ")");
+            System.out.println(" " + pairs.getKey() + " = " + pairs.getValue().getValue() + " (address:" + pairs.getValue().hashCode() + ")");
         }
     }
 

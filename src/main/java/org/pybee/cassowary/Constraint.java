@@ -14,7 +14,7 @@ public class Constraint extends AbstractConstraint
             this._value = value;
         }
 
-        public int value() {
+        public int getValue() {
             return _value;
         }
 
@@ -249,7 +249,7 @@ public class Constraint extends AbstractConstraint
         this(cle, op_enum, clv, Strength.REQUIRED, 1.0);
     }
 
-    public Expression expression()
+    public Expression getExpression()
     {
         return _expression;
     }

@@ -21,11 +21,11 @@ public class Util {
 
     public static boolean approx(Variable clv, double b)
     {
-        return approx(clv.value(),b);
+        return approx(clv.getValue(),b);
     }
 
     public static boolean approx(double a, Variable clv)
     {
-        return approx(a,clv.value());
+        return approx(a,clv.getValue());
     }
 }

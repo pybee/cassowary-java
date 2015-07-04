@@ -102,7 +102,7 @@ public class TimingTests {
 
         // FIXGJB start = Timer.now();
         for (int m = 0; m < RESOLVE_COUNT; m++) {
-            solver.resolve(rgpclv[e1Index].value() * 1.001, rgpclv[e2Index].value() * 1.001);
+            solver.resolve(rgpclv[e1Index].getValue() * 1.001, rgpclv[e2Index].getValue() * 1.001);
         }
 
         System.out.println("done resolves -- now removing constraints");
