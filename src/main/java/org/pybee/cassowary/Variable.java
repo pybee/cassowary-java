@@ -99,8 +99,9 @@ public class Variable extends AbstractVariable
     // means the solver is setting the external variable
     public void changeValue(double value)
     {
+        double oldVal = _value;
         _value = value;
-        if (_observer != null) {
+        if (_observer != null && !Util.approx(oldVal, _value)) {
             _observer.onVariableChanged(this);
         }
     }
@@ -145,6 +146,11 @@ public class Variable extends AbstractVariable
         return _observer;
     }
 
+    /**
+     * Set an observer to be notified when the variable changes
+     * <br/>
+     * If the variable is set to the same value it already has, the observer will not be notified.
+     */
     public void setObserver(VariableObserver variableObserver) {
         this._observer = variableObserver;
     }
